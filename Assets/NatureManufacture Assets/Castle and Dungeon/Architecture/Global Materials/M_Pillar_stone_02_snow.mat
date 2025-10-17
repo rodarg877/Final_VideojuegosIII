@@ -1,0 +1,200 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-5304594452596512860
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa486462e6be1764e89c788ba30e61f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_DiffusionProfileReferences: []
+  m_MaterialReferences:
+  - {fileID: 2100000}
+  - {fileID: 2100000}
+--- !u!114 &-1954167644569083111
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: da692e001514ec24dbc4cca1949ff7e8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  version: 11
+  hdPluginSubTargetMaterialVersions:
+    m_Keys: []
+    m_Values: 
+--- !u!21 &2100000
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: M_Pillar_stone_02_snow
+  m_Shader: {fileID: 4800000, guid: d226ffe19e7968b42a093d463d9b41c5, type: 3}
+  m_Parent: {fileID: 2100000, guid: 820c0aff977ad5b4aaf34c88a08bc2a9, type: 2}
+  m_ModifiedSerializedProperties: 0
+  m_ValidKeywords: []
+  m_InvalidKeywords:
+  - _DISABLE_SSR_TRANSPARENT
+  - _MASKMAP
+  - _MASKMAP0
+  - _MASKMAP1
+  - _NORMALMAP
+  - _NORMALMAP0
+  - _NORMALMAP1
+  - _NORMALMAP_TANGENT_SPACE
+  - _NORMALMAP_TANGENT_SPACE0
+  - _NORMALMAP_TANGENT_SPACE1
+  - _NORMALMAP_TANGENT_SPACE2
+  - _NORMALMAP_TANGENT_SPACE3
+  - _REQUIRE_UV2
+  - _TESSELLATION_PHONG
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap:
+    MotionVector: User
+    RenderType: Opaque
+  disabledShaderPasses:
+  - TransparentDepthPrepass
+  - TransparentDepthPostpass
+  - TransparentBackface
+  - RayTracingPrepass
+  m_LockedProperties: 
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - Texture2D_6bcb4c58bd704be4b8cab1bcb9d68c55:
+        m_Texture: {fileID: 2800000, guid: 5f0949eecde21554ca8846e01675c7b4, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - Texture2D_ffe3635a2cf34111a0265be40637082f:
+        m_Texture: {fileID: 2800000, guid: 007bb7e79d484154e8da4b6475380faa, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Base2ColorMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Base2MaskMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Base2NormalMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _BaseColorMap:
+        m_Texture: {fileID: 2800000, guid: 219ceadfdded5be48beb0ec695b59e3e, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _BaseMaskMap:
+        m_Texture: {fileID: 2800000, guid: 05dd9b663f4de6445a82a6be2061d8bb, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _BaseNormalMap:
+        m_Texture: {fileID: 2800000, guid: 92159afa1ba85d040834e8282f13ba20, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _CoverBaseColorMap:
+        m_Texture: {fileID: 2800000, guid: 61d722b8b3707b8489b91ed4af7c8918, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _CoverMaskMap:
+        m_Texture: {fileID: 2800000, guid: a0e6192b8d2225a46abefcc12a121e0e, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _CoverNormalMap:
+        m_Texture: {fileID: 2800000, guid: a4e60d649c7f3f444b01ffe03e9d6658, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MainTex:
+        m_Texture: {fileID: 2800000, guid: 219ceadfdded5be48beb0ec695b59e3e, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _ShapeCurvAOHLeaksMask:
+        m_Texture: {fileID: 2800000, guid: 68eb7ac44074bad4e8a93611e441ed8b, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _ShapeNormal:
+        m_Texture: {fileID: 2800000, guid: 007bb7e79d484154e8da4b6475380faa, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - Leaks_UV0_UV2_1: 0
+    - Vector1_63dc03126848467b84bb71ca3c731612: 0.09
+    - _Base2EmissionMaskIntensivity: 0.01
+    - _Base2EmissionMaskTreshold: 0
+    - _Base2UsePlanarUV: 0
+    - _BaseEmissionMaskIntensivity_1: 11.18
+    - _BaseEmissionMaskTreshold_1: 3
+    - _BaseSmoothnessRemapMin: 0
+    - _CoverEmissionMaskIntensivity: 0
+    - _CoverEmissionMaskTreshold: 1
+    - _CoverHardness: 2
+    - _CoverHeightMapMax: 4.92
+    - _CoverHeightMapMin: -0.18
+    - _CoverNormalBlendHardness: 8
+    - _CoverNormalScale: 1
+    - _CoverSmoothnessRemapMin: 0
+    - _CoverTessMapMax: 1
+    - _CoverTessMapMin: 0
+    - _CoverUsePlanarUV: 1
+    - _Cover_Min_Height: 106
+    - _Cover_Min_Height_Blending: 8
+    - _Cover_UV0_UV2: 0
+    - _CurvatureBlend: 0.177
+    - _HeightMax2: 1
+    - _HeightMin: -1
+    - _HeightMin2: -1
+    - _Height_Transition: 1
+    - _Invert_Layer_Mask: 0
+    - _LeaksSmoothnessMultiply: 0.3
+    - _LeaksSmoothnessMultiply_1: 1
+    - _ShapeHeightMapMax: 1
+    - _ShapeHeightMapMin: 0
+    - _ShapeHeightMapOffset: 1.2
+    - _ShapeNormalStrenght: 1
+    - _ShapeNormalStrenght_1: 1
+    - _ShapeTessMapMax: 1
+    - _ShapeTessMapMin: 0
+    - _Shape_Normal_Blend_Hardness: 2
+    - _Tesselation_Factor: 10
+    - _TessellationBackFaceCullEpsilon: -0.25
+    - _TessellationFactorMaxDistance: 50
+    - _TessellationFactorMinDistance: 20
+    - _TessellationFactorTriangleSize: 100
+    - _TessellationMaxDisplacement: 0.01
+    - _TessellationShapeFactor: 0.75
+    - _Use_ShapeHeightBInvertedT_Static_MaskF: 0
+    - _VertexColorBBlendStrenght: 7.2
+    - _VertexColorGBlendStrenght: 7.2
+    - _Wetness_T_Heat_F: 0
+    m_Colors:
+    - Color_9038becb6e614b229ea1aa0f2e0ea888: {r: 0.40129915, g: 0.4036379, b: 0.509434, a: 1}
+    - Vector4_606b2bd599b74c8eb765aa838d8005ef: {r: 4, g: 4, b: 0, a: 0}
+    - _Base2TilingOffset: {r: 1, g: 1, b: 0, a: 0}
+    - _BaseColor: {r: 0.6784314, g: 0.6784314, b: 0.6784314, a: 1}
+    - _BaseLeaksColorMultiply: {r: 0.41509408, g: 0.41509408, b: 0.41509408, a: 0.74509805}
+    - _BaseTilingOffset: {r: 3, g: 3, b: 0, a: 0}
+    - _Color: {r: 0.6784314, g: 0.6784314, b: 0.6784314, a: 1}
+    - _CoverBaseColor: {r: 1, g: 1, b: 1, a: 0}
+    - _CoverLeaksColorMultiply: {r: 0, g: 0, b: 0, a: 0}
+    - _CoverTilingOffset: {r: 6, g: 6, b: 0, a: 0}
+    - _LeaksColorMultiply: {r: 0, g: 0, b: 0, a: 0}
+    - _LeaksTilingOffset2: {r: 1, g: 1, b: 0, a: 0}
+    - _WetColor: {r: 0.7254902, g: 0.7254902, b: 0.7254902, a: 0}
+  m_BuildTextureStacks: []
+  m_AllowLocking: 1
