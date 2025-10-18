@@ -18,6 +18,7 @@ Material:
   - _INTERSECTION_FOAM
   - _NORMALMAP
   - _REFRACTION
+  - _SURFACE_FOAM
   - _WAVES
   m_InvalidKeywords:
   - ADVANCED_LIGHTING
@@ -31,7 +32,7 @@ Material:
   - _WORLDSPACEUV_ON
   - _ZCLIP_ON
   m_LightmapFlags: 4
-  m_EnableInstancingVariants: 0
+  m_EnableInstancingVariants: 1
   m_DoubleSidedGI: 0
   m_CustomRenderQueue: -1
   stringTagMap: {}
@@ -162,7 +163,7 @@ Material:
     - _DepthHorizontal: 1
     - _DepthMode: 0
     - _DepthTexture: 1
-    - _DepthVertical: 6.79
+    - _DepthVertical: 0.93
     - _DisableDepthTexture: 0
     - _DistanceNormalsOn: 1
     - _DistanceNormalsTiling: 0.10000002
@@ -178,7 +179,7 @@ Material:
     - _FoamBubblesStrength: 1
     - _FoamClipping: 0
     - _FoamDistortion: 0.1
-    - _FoamOn: 0
+    - _FoamOn: 1
     - _FoamOpacity: 0.686
     - _FoamSize: 0.058
     - _FoamSpeed: -0.059999995
@@ -203,6 +204,7 @@ Material:
     - _IntersectionFoamOn: 1
     - _IntersectionLength: 2
     - _IntersectionRippleDist: 64
+    - _IntersectionRippleSpeed: 2
     - _IntersectionRippleStrength: 0.544
     - _IntersectionSharp: 1
     - _IntersectionSize: 0.944
@@ -296,14 +298,14 @@ Material:
     - _WaveNormalStr: 0
     - _WaveSpeed: 1
     - _WaveSteepness: 1
-    - _WaveTint: 0.033
+    - _WaveTint: 0.0368
     - _WavesOn: 1
     - _WorkflowMode: 1
     - _WorldSpaceUV: 1
     - _ZClip: 1
     - _ZWrite: 0
     m_Colors:
-    - _BaseColor: {r: 0, g: 0.2523394, b: 0.6603774, a: 1}
+    - _BaseColor: {r: 0, g: 258.39554, b: 676.22644, a: 1}
     - _Color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
     - _DepthMapBounds: {r: -402.3, g: -459.43, b: 0.0012693577, a: 0}
     - _Direction: {r: -1, g: -1, b: 0, a: 0}
@@ -312,7 +314,7 @@ Material:
     - _FoamColor: {r: 1, g: 1, b: 1, a: 0.6862745}
     - _FoamCrestMinMaxHeight: {r: 1, g: 2, b: 0, a: 0}
     - _FoamTiling: {r: 0.1, g: 0.1, b: 0, a: 0}
-    - _HorizonColor: {r: 0.68, g: 1, b: 0.99, a: 0.12156863}
+    - _HorizonColor: {r: 0.34, g: 0.5, b: 0.495, a: 0.12156863}
     - _IntersectionColor: {r: 1, g: 1, b: 1, a: 1}
     - _NormalTiling: {r: 0.2, g: 0.2, b: 0, a: 0}
     - _RimColor: {r: 1, g: 1, b: 1, a: 1}
