@@ -21,7 +21,7 @@ namespace StylizedWater3
     {
         //Window properties
         private static readonly int width = 600;
-        private static readonly int height = 520;
+        private static readonly int height = 640;
 
         [SerializeField]
         private Changelog changelog;
@@ -34,6 +34,11 @@ namespace StylizedWater3
 		[MenuItem("Window/Stylized Water 3/Hub Window", false, 1001)]
         public static void ShowWindow()
         {
+            ShowWindow(false);
+        }
+
+        public static void ShowWindow(bool installation)
+        {
             HelpWindow editorWindow = EditorWindow.GetWindow<HelpWindow>(true, AssetInfo.ASSET_NAME, true);
 
             //Open somewhat in the center of the screen
@@ -42,6 +47,8 @@ namespace StylizedWater3
             //Fixed size
             editorWindow.maxSize = new Vector2(width, height);
             editorWindow.minSize = new Vector2(width, height);
+
+            if (installation) editorWindow.selectedSectionIndex = 1;
             
             editorWindow.Show();
         }
@@ -76,7 +83,7 @@ namespace StylizedWater3
         }
         
         static Constants constants = null;
-        
+        private Section installationSection;
         private void OnEnable()
         {
             AssetInfo.VersionChecking.CheckForUpdate(false);
@@ -85,13 +92,22 @@ namespace StylizedWater3
             underwaterExtensionInstalled = StylizedWaterEditor.UnderwaterRenderingInstalled();
             dynamicEffectsInstalled = StylizedWaterEditor.DynamicEffectsInstalled();
             
+            Installer.Initialize();
+            
             sections = new List<Section>();
             sections.Add(new Section("Home", DrawHome));
-            sections.Add(new Section("Installation", DrawInstallation));
+            installationSection = new Section("Installation", DrawInstallation);
+            sections.Add(installationSection);
+            sections.Add(new Section("Changelog", DrawChangelog));
             sections.Add(new Section("Integrations", DrawIntegrations));
             //sections.Add(new Section("Extensions", DrawExtensions));
             sections.Add(new Section("Support", DrawSupport));
             
+        }
+
+        private void OnFocus()
+        {
+            Installer.Initialize();
         }
 
         private Texture m_HeaderImg;
@@ -165,7 +181,7 @@ namespace StylizedWater3
             } 
         }
 
-        private Color defaultColor;
+        private static Color defaultColor;
         
         private delegate void OnGUIDelegate();
         private class Section
@@ -221,13 +237,13 @@ namespace StylizedWater3
             rect.height = 85f;
             rect.width = width;
             GUI.DrawTexture(rect, HeaderImg);
-            //float backgroundTint = EditorGUIUtility.isProSkin ? 0f : 1f;
-            //EditorGUI.DrawRect(rect, new Color(backgroundTint, backgroundTint, backgroundTint, 0.2f));
+            float backgroundTint = EditorGUIUtility.isProSkin ? 0f : 1f;
+            EditorGUI.DrawRect(rect, new Color(backgroundTint, backgroundTint, backgroundTint, 0.66f));
             
             GUILayout.Space(-7f);
-            EditorGUILayout.LabelField("<size=26><color=#444444><b>" + AssetInfo.ASSET_NAME + "</b></color></size>", UI.Styles.H1);
+            EditorGUILayout.LabelField("<size=26><color=#fff><b>" + AssetInfo.ASSET_NAME + "</b></color></size>", UI.Styles.H1);
             GUILayout.Space(-5f);
-            EditorGUILayout.LabelField("<size=12><color=#444444><i>by Staggart Creations</i></color></size>", UI.Styles.H1);
+            EditorGUILayout.LabelField("<size=12><color=#fff><i>by Staggart Creations</i></color></size>", UI.Styles.H1);
             GUILayout.Space(16f);
 
             GUILayout.Space(4f);
@@ -280,6 +296,8 @@ namespace StylizedWater3
         
         void DrawHome()
         {
+            UI.DrawNotification(Installer.HasError, "One or more errors were detected in your project", "View", () => { selectedSectionIndex = 1; }, MessageType.Error);
+            
             using (new EditorGUILayout.VerticalScope())
             {
                 UI.DrawH2("Thank you for licensing Stylized Water 3!");
@@ -329,128 +347,30 @@ namespace StylizedWater3
 
         void DrawInstallation()
         {
-            //Testing
-            //AssetInfo.compatibleVersion = false;
-            //AssetInfo.alphaVersion = true;
-            //AssetInfo.IS_UPDATED = false;
-            
-            using (new EditorGUILayout.VerticalScope())
+            using (new EditorGUILayout.VerticalScope(EditorStyles.textArea))
             {
-                EditorGUILayout.Separator();
-                
-                //Version
-                using (new EditorGUILayout.HorizontalScope())
+                foreach (Installer.SetupItem context in Installer.SetupItems)
                 {
-                    EditorGUILayout.LabelField("Asset version");
-
-                    using (new EditorGUILayout.HorizontalScope(EditorStyles.textField))
+                    if (UI.DrawSetupItem(context))
                     {
-                        if (AssetInfo.VersionChecking.UPDATE_AVAILABLE == false)
-                        {
-                            GUI.contentColor = UI.GreenColor;
-                            EditorGUILayout.LabelField(AssetInfo.INSTALLED_VERSION + " (Latest)");
-                            GUI.contentColor = defaultColor;
-                        }
-                        else
-                        {
-                            GUI.contentColor = UI.OrangeColor;
-                            EditorGUILayout.LabelField(AssetInfo.INSTALLED_VERSION + " (Outdated)", EditorStyles.boldLabel);
-                            GUI.contentColor = defaultColor;
-                        }
-                    }
-                }
-                
-                UI.DrawNotification(AssetInfo.VersionChecking.UPDATE_AVAILABLE, "Asset can be updated through the Package Manager. Please update any extensions as well!", "Open", () => AssetInfo.OpenInPackageManager());
-
-                changelog.Draw();
-
-                //Unity version
-                using (new EditorGUILayout.HorizontalScope())
-                {
-                    EditorGUILayout.LabelField("Unity " + AssetInfo.VersionChecking.GetUnityVersion());
-
-                    using (new EditorGUILayout.HorizontalScope(EditorStyles.textField))
-                    {
-                        if (AssetInfo.compatibleVersion && !AssetInfo.alphaVersion)
-                        {
-                            GUI.contentColor = UI.GreenColor;
-                            EditorGUILayout.LabelField("Compatible");
-                            GUI.contentColor = defaultColor;
-                        }
-                        else if (!AssetInfo.supportedVersion)
-                        {
-                            GUI.contentColor = UI.OrangeColor;
-                            EditorGUILayout.LabelField("Unsupported");
-                            GUI.contentColor = defaultColor;
-                        }
-                        if (AssetInfo.alphaVersion)
-                        {
-                            GUI.contentColor = UI.OrangeColor;
-                            EditorGUILayout.LabelField("Alpha/beta", EditorStyles.boldLabel);
-                            GUI.contentColor = defaultColor;
-                        }
-                    }
-                }
-                
-                UI.DrawNotification(AssetInfo.compatibleVersion == false, "This version of Unity is not compatible." + 
-                                                                            "\n\nPlease upgrade to at least Unity " + AssetInfo.MIN_UNITY_VERSION, MessageType.Error);
-
-                UI.DrawNotification(AssetInfo.supportedVersion == false, "This version of Unity is no longer supported. Any errors or issues will need to be resolved locally." + 
-                                                                             "\n\nPlease upgrade to at least Unity " + AssetInfo.MIN_UNITY_VERSION, MessageType.Warning);
-
-                UI.DrawNotification(AssetInfo.alphaVersion, "Only release Unity versions are subject to support and fixes. You may run into issues at own risk.", MessageType.Warning);
-                
-                using (new EditorGUILayout.HorizontalScope())
-                {
-                    EditorGUILayout.LabelField("Target graphics API");
-
-                    using (new EditorGUILayout.HorizontalScope(EditorStyles.textField))
-                    {
-                        string prefix = "Compatible";
-                        #if !UNITY_2023_1_OR_NEWER //OpenGLES 2.0 no longer supported at all
-                        if (PlayerSettings.GetGraphicsAPIs(EditorUserBuildSettings.activeBuildTarget)[0] == GraphicsDeviceType.OpenGLES2)
-                        {
-                            GUI.contentColor = UI.RedColor;
-                            prefix = "Incompatible";
-                        }
-                        else
-                        #endif
-                        {
-                            GUI.contentColor = UI.GreenColor;
-                        }
-                        
-                        EditorGUILayout.LabelField($"{prefix} ({PlayerSettings.GetGraphicsAPIs(EditorUserBuildSettings.activeBuildTarget)[0].ToString()})");
-                        GUI.contentColor = defaultColor;
+                        return;
                     }
                 }
             }
         }
 
+        void DrawChangelog()
+        {
+            using (new EditorGUILayout.VerticalScope())
+            {
+                EditorGUILayout.Separator();
+                
+                changelog.Draw();
+            }
+        }
+        
         void DrawIntegrations()
         {   
-            UI.DrawH2("Shader integrations");
-
-            using (new EditorGUILayout.HorizontalScope())
-            {
-                EditorGUILayout.LabelField("Curved World 2020");
-
-                using (new EditorGUILayout.HorizontalScope(EditorStyles.textField))
-                {
-                    if (StylizedWaterEditor.CurvedWorldInstalled(out var _)) GUI.contentColor = UI.GreenColor;
-                    EditorGUILayout.LabelField(StylizedWaterEditor.CurvedWorldInstalled(out var _) ? "Installed" : "Not Installed", GUILayout.MaxWidth((75f)));
-                    GUI.contentColor = defaultColor;
-
-                    GUILayout.FlexibleSpace();
-
-                    if (GUILayout.Button(UI.Styles.AssetStoreBtnContent))
-                    {
-                        AssetInfo.OpenAssetStore("https://assetstore.unity.com/packages/slug/173251");
-                    }
-                }
-            }
-            
-            EditorGUILayout.Space();
-
             UI.DrawH2("Fog integrations");
 
             foreach (FogIntegration.Integration integration in FogIntegration.Integrations)
@@ -474,24 +394,37 @@ namespace StylizedWater3
         {
             using (new EditorGUILayout.VerticalScope())
             {
-                UI.DrawExtension("Dynamic Effects",
-                    "Enables advanced effects to be projected onto the water surface. Such as boat wakes, ripples and shoreline waves.", dynamicEffectsInstalled,
-                    "https://assetstore.unity.com/packages/slug/299321?aid=1011l7Uk8&pubref=sw3editor", UI.DynamicEffectsAssetIcon);
-                
-                /*
-                EditorGUILayout.Separator();
+                EditorGUILayout.LabelField("Installed", EditorStyles.boldLabel);
+                for (int i = 0; i < Extension.installed.Length; i++)
+                {
+                    Extension extension = Extension.installed[i];
+                    
+                    //EditorGUILayout.LabelField(extension.name);
+                    UI.DrawExtension(extension.name, extension.description, true, extension.assetStoreID, extension.icon);
+                }
 
-                UI.DrawExtension("Underwater Rendering",
-                    "Extends the Stylized Water 3 shader asset with underwater rendering, by seamlessly blending the water with post processing effects.", underwaterExtensionInstalled,
-                    "https://assetstore.unity.com/packages/slug/185030?aid=1011l7Uk8&pubref=sw3editor", UI.UnderwaterAssetIcon);
-                    */
+                if (Extension.available.Length > 0)
+                {
+                    EditorGUILayout.Space();
+                    
+                    EditorGUILayout.LabelField("Available for purchase", EditorStyles.boldLabel);
+                    
+                    for (int i = 0; i < Extension.available.Length; i++)
+                    {
+                        Extension extension = Extension.available[i];
+
+                        //EditorGUILayout.LabelField(extension.name);
+                        UI.DrawExtension(extension.name, extension.description, false, extension.assetStoreID, extension.icon);
+                        
+                        EditorGUILayout.Separator();
+                    }
+                }
             }
-
         }
         
         void DrawSupport()
         {
-            UI.DrawNotification(AssetInfo.alphaVersion, "You are using an beta/alpha version of Unity. You may run into issues at own risk.", MessageType.Warning);
+            UI.DrawNotification(AssetInfo.VersionChecking.unityVersionType != AssetInfo.VersionChecking.UnityVersionType.Release, $"You are using a {AssetInfo.VersionChecking.unityVersionType} version of Unity. You may run into issues at own risk.", MessageType.Warning);
 
             using (new EditorGUILayout.VerticalScope())
             {
@@ -548,7 +481,7 @@ namespace StylizedWater3
                     projectDetails = GetProjectDetails();
                 }
             }
-            projectDetailsScrollPos = EditorGUILayout.BeginScrollView(projectDetailsScrollPos, EditorStyles.helpBox, GUILayout.Height(200f));
+            projectDetailsScrollPos = EditorGUILayout.BeginScrollView(projectDetailsScrollPos, EditorStyles.helpBox, GUILayout.Height(280f));
             EditorGUILayout.LabelField(projectDetails, UI.Styles.WordWrapLabel);
             EditorGUILayout.EndScrollView();
 
@@ -589,18 +522,16 @@ namespace StylizedWater3
             stringBuilder.AppendLine($"OS: {SystemInfo.operatingSystem}");
             stringBuilder.AppendLine($"Platform: {EditorUserBuildSettings.activeBuildTarget}");
             
-            string scriptingBackend = string.Empty;
-            #if UNITY_2023_1_OR_NEWER
             NamedBuildTarget buildTargetName = NamedBuildTarget.FromBuildTargetGroup(buildTargetGroup);
-            scriptingBackend = PlayerSettings.GetDefaultScriptingBackend(buildTargetName).ToString();
-            #else
-            scriptingBackend = PlayerSettings.GetDefaultScriptingBackend(buildTargetGroup).ToString();
-            #endif
+            string scriptingBackend = PlayerSettings.GetDefaultScriptingBackend(buildTargetName).ToString();
             stringBuilder.AppendLine($"Scripting backend: {scriptingBackend}");
 
             stringBuilder.AppendLine($"Color space: {PlayerSettings.colorSpace}");
             stringBuilder.AppendLine($"Graphics API(s): (Auto:{PlayerSettings.GetUseDefaultGraphicsAPIs(EditorUserBuildSettings.activeBuildTarget)}) {String.Join(" -> ", PlayerSettings.GetGraphicsAPIs(EditorUserBuildSettings.activeBuildTarget))}");
             stringBuilder.AppendLine($"Tessellation support: {SystemInfo.supportsTessellationShaders}");
+            stringBuilder.AppendLine($"Compute shader support: {SystemInfo.supportsComputeShaders}");
+            stringBuilder.AppendLine($"Async GPU readback support: {SystemInfo.supportsAsyncGPUReadback}");
+            stringBuilder.AppendLine($"Async compute support: {SystemInfo.supportsAsyncCompute}");
 
             #if UNITY_6000_0_OR_NEWER && URP
             stringBuilder.AppendLine($"GPU Resident Drawer: {UniversalRenderPipeline.asset.gpuResidentDrawerMode != GPUResidentDrawerMode.Disabled}");
@@ -646,16 +577,15 @@ namespace StylizedWater3
             stringBuilder.AppendLine($"Strict shader variant matching: {PlayerSettings.strictShaderVariantMatching}");
 
             stringBuilder.AppendLine($"");
-
-            string defaultShaderPath = AssetDatabase.GUIDToAssetPath("823f6b206953b674a9a64f9e3ec57752");
             
-            if(defaultShaderPath == string.Empty)
+            Shader defaultShader = ShaderConfigurator.GetDefaultShader();
+            
+            if(defaultShader == null)
             {
                 stringBuilder.AppendLine($"[Failed to find default shader!]");
             }
             else
             {
-                Shader defaultShader = AssetDatabase.LoadAssetAtPath<Shader>(defaultShaderPath);
                 ShaderMessage[] shaderMessages = ShaderConfigurator.GetErrorMessages(defaultShader);
                 
                 stringBuilder.AppendLine($"Shader compile errors ({shaderMessages?.Length ?? 0}):");
@@ -680,7 +610,7 @@ namespace StylizedWater3
             private string changelogContent;
             private Vector2 scrollPos;
 
-            public float maxHeight = 300f;
+            public float maxHeight = 500f;
             
             public Changelog()
             {
@@ -700,6 +630,7 @@ namespace StylizedWater3
                 
                 changelogStyle = new GUIStyle(GUI.skin.label);
                 changelogStyle.fontSize = 12;
+                changelogStyle.alignment = TextAnchor.UpperLeft;
                 changelogStyle.richText = true;
                 changelogStyle.wordWrap = true;
             }

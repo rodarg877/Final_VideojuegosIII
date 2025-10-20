@@ -15,14 +15,34 @@ namespace StylizedWater3
     public static partial class HeightQuerySystem
     {
         private const string PROFILER_PREFIX = "[GPU] Water Height Query:";
-
-        public static bool IsSupported()
+        
+        public static bool DISABLE_IN_EDIT_MODE
         {
-            return SystemInfo.supportsComputeShaders;
+            #if UNITY_EDITOR
+            get { return UnityEditor.EditorPrefs.GetBool("SW3_HeightQuerySystem_EditMode", false); }
+            set { UnityEditor.EditorPrefs.SetBool("SW3_HeightQuerySystem_EditMode", value); }
+            #else
+            get { return false; }
+            #endif
         }
         
         /// <summary>
-        /// Verifies if the returned height value is valid. If not, the sampling position fell outside of the camera frustum or was not above any water surface
+        /// Reports if the current device/platform supports Compute Shaders
+        /// </summary>
+        /// <returns></returns>
+        public static bool IsSupported()
+        {
+            #if UNITY_WEBGL
+            return false;
+            #else
+            return SystemInfo.supportsComputeShaders;
+            #endif
+        }
+        internal const string UNSUPPORTED_MESSAGE = "[Stylized Water 3] Compute shaders are reportedly not supported on this platform. The GPU Height readback technique relies on this, so is not supported either. " +
+                                                   "If you are using any \"Align To Water\" components, or custom buoyancy physics using the API, switch all of them to the \"CPU\" method.";
+        
+        /// <summary>
+        /// Verifies if the returned height value is valid. If not, the sampling position fell outside the camera frustum or was not above any water surface
         /// If false, do not incorporate this value in any processing!
         /// </summary>
         /// <param name="value"></param>
@@ -81,10 +101,14 @@ namespace StylizedWater3
             {
                 FixedValue,
                 [InspectorName("Water Object Y-position")]
-                WaterObject
+                WaterObject,
+                Transform,
+                Ocean
             }
             [Tooltip("Configure what should be used to set the base water level. Relative wave height is added to this value")]
             public WaterLevelSource waterLevelSource = WaterLevelSource.WaterObject;
+            [Tooltip("This transform's Y-position is used as the base water level, this value is important and required for correct rendering. As such, underwater rendering does not work with rivers or other non-flat water")]
+            public Transform waterLevelTransform;
             public float waterLevel;
 
             /// <summary>
@@ -93,12 +117,33 @@ namespace StylizedWater3
             /// <returns></returns>
             public float GetWaterLevel()
             {
-                return waterLevelSource == WaterLevelSource.WaterObject && waterObject ? waterObject.transform.position.y : waterLevel;
+                if (waterLevelSource == WaterLevelSource.WaterObject && waterObject) return waterObject.transform.position.y;
+                if (waterLevelSource == WaterLevelSource.Transform && waterLevelTransform) return waterLevelTransform.position.y;
+                if (waterLevelSource == WaterLevelSource.Ocean && OceanFollowBehaviour.Instance)
+                {
+                    //Store it, so that it is always valid even when the singleton hasn't loaded yet
+                    waterLevel = OceanFollowBehaviour.Instance.transform.position.y;
+                    return waterLevel;
+                }
+				
+                return waterLevel;
             }
 
             public bool IsRiverMaterial()
             {
-                return waterObject.material.IsKeywordEnabled("_RIVER");
+                return waterObject.material.IsKeywordEnabled(ShaderParams.Keywords.River);
+            }
+
+            public WaterObject GetWaterObject(Vector3 worldPosition)
+            {
+                if (autoFind) waterObject = WaterObject.Find(worldPosition, false);
+                
+                return waterObject;
+            }
+            
+            public bool HasMissingReferences()
+            {
+                return (waterObject && waterObject.material && waveProfile) == false;
             }
         }
 
@@ -131,7 +176,7 @@ namespace StylizedWater3
             }
 
             int queryIndex = queries.Count;
-            int sampleCount = request.sampler.positions.Length;
+            int sampleCount = request.sampler.SampleCount;
 
             if (sampleCount == 0)
             {

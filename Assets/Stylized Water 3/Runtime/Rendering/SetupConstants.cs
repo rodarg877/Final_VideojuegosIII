@@ -18,7 +18,8 @@ namespace StylizedWater3
         
         private static readonly int _CausticsProjectionAvailable = Shader.PropertyToID("_CausticsProjectionAvailable");
         private static readonly int CausticsProjection = Shader.PropertyToID("CausticsProjection");
-        private static readonly int _WaterSSRAllowed = Shader.PropertyToID("_WaterSSRAllowed");
+        private static readonly int _WaterSSRParams = Shader.PropertyToID("_WaterSSRParams");
+        private static readonly int _WaterSSRSettings = Shader.PropertyToID("_WaterSSRSettings");
 
         private static VisibleLight mainLight;
         private Matrix4x4 causticsProjection;
@@ -34,20 +35,30 @@ namespace StylizedWater3
         public void Setup(StylizedWaterRenderFeature renderFeature)
         {
             this.settings = renderFeature;
+
+            /*
+             //Whilst required for these features, do not impose onto the render pipeline
+             //User must manage the enabled state of depth texture
+            if (settings.screenSpaceReflectionSettings.allow || settings.allowDirectionalCaustics)
+            {
+                ConfigureInput(ScriptableRenderPassInput.Depth);
+            }
+            */
         }
         
         private class PassData
         {
+            public UniversalCameraData cameraData;
+            
             public bool directionalCaustics;
             public Matrix4x4 causticsProjection;
+            
             public bool ssr;
-            public UniversalCameraData cameraData;
+            public bool ssrSkybox;
         }
 
         public override void RecordRenderGraph(RenderGraph renderGraph, ContextContainer frameData)
         {
-            //UniversalRenderingData renderingData = frameData.Get<UniversalRenderingData>();
-            UniversalResourceData resourceData = frameData.Get<UniversalResourceData>();
             UniversalLightData lightData = frameData.Get<UniversalLightData>();
             UniversalCameraData cameraData = frameData.Get<UniversalCameraData>();
             
@@ -58,6 +69,7 @@ namespace StylizedWater3
             using (var builder = renderGraph.AddRasterRenderPass<PassData>("Water Constants", out var passData, m_ProfilingSampler))
             {
                 passData.ssr = settings.screenSpaceReflectionSettings.allow;
+                passData.ssrSkybox = settings.screenSpaceReflectionSettings.reflectEverything;
                 passData.directionalCaustics = settings.allowDirectionalCaustics;
             
                 if (passData.directionalCaustics)
@@ -88,12 +100,6 @@ namespace StylizedWater3
                 //Pass should always execute
                 builder.AllowPassCulling(false);
 
-                //if(passData.ssr) builder.UseTexture(resourceData.cameraOpaqueTexture, AccessFlags.Read);
-                if (passData.ssr || passData.directionalCaustics)
-                {
-                    builder.UseTexture(resourceData.cameraDepthTexture, AccessFlags.Read);
-                }
-
                 builder.AllowGlobalStateModification(true);
                 builder.SetRenderFunc((PassData data, RasterGraphContext rgContext) =>
                 {
@@ -102,15 +108,15 @@ namespace StylizedWater3
             }
         }
         
-        //RG
         static void Execute(RasterCommandBuffer cmd, PassData data)
         {
-            //Debug.Log("ExecutePass");
+            cmd.SetGlobalVector(_WaterSSRParams, new Vector4(data.ssr ? 1 : 0, data.ssrSkybox ? 1 : 0, 0));
             
-            cmd.SetGlobalInt(_WaterSSRAllowed, data.ssr ? 1 : 0);
+            //Exposed settings not ready yet, would like to refactor the raymarching to use a step-distance, rather than a fixed number of steps.
+            cmd.SetGlobalVector(_WaterSSRSettings, new Vector4(12, 0.75f, 100f, 1.0f));
+            
             cmd.SetGlobalInt(_CausticsProjectionAvailable, data.directionalCaustics ? 1 : 0);
-
-            if (data.directionalCaustics && data.cameraData != null) //Remove camera data null check when removing non-RG fallback
+            if (data.directionalCaustics)
             {
                 cmd.SetGlobalMatrix(CausticsProjection, data.causticsProjection);
                 
@@ -118,45 +124,24 @@ namespace StylizedWater3
                 NormalReconstruction.SetupProperties(cmd, data.cameraData);
             }
         }
-        
-        //Non-RG fallback
-        #pragma warning disable CS0672
-        public override void Execute(ScriptableRenderContext context, ref RenderingData renderingData)
-        {
-            var cmd = CommandBufferPool.Get();
-            
-            PassData passData = new PassData
-            {
-                ssr = settings.screenSpaceReflectionSettings.allow,
-                directionalCaustics = settings.allowDirectionalCaustics
-            };
 
-            //UniversalLightData and LightData classes are identical, yet not interchangable. Simplified passing of sun-light projection as a fallback
-            if (passData.directionalCaustics && RenderSettings.sun)
-            {
-                passData.causticsProjection = Matrix4x4.Rotate(RenderSettings.sun.transform.rotation).inverse;
-            }
-            
-            using (new ProfilingScope(cmd, m_ProfilingSampler))
-            {
-                Execute(CommandBufferHelpers.GetRasterCommandBuffer(cmd), passData);
-            }
-            
-            context.ExecuteCommandBuffer(cmd);
-            CommandBufferPool.Release(cmd);
-        }
-        #pragma warning restore CS0672
-
-        public override void FrameCleanup(CommandBuffer cmd)
+        public override void OnCameraCleanup(CommandBuffer cmd)
         {
+            //Important to disable these features, as the next camera rendering may be using a different renderer altogether
             cmd.SetGlobalInt(_CausticsProjectionAvailable, 0);
-            cmd.SetGlobalInt(_WaterSSRAllowed, 0);
+            cmd.SetGlobalVector(_WaterSSRParams, Vector4.zero);
         }
 
         public void Dispose()
         {
             
         }
+        
+#pragma warning disable CS0672
+#pragma warning disable CS0618
+        public override void Execute(ScriptableRenderContext context, ref RenderingData renderingData) { }
+#pragma warning restore CS0672
+#pragma warning restore CS0618
     }
 }
 #endif

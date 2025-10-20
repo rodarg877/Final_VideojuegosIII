@@ -87,6 +87,12 @@ namespace StylizedWater3
             #endif
             
             EditorGUILayout.HelpBox("This component provides a means for other scripts to identify and find water bodies", MessageType.None);
+
+
+            UI.DrawNotification(component.gameObject.layer != LayerMask.NameToLayer("Water"), "Object is not on the \"Water\" layer. This means it won't work with height readback operations", "Fix", () =>
+            {
+                component.gameObject.layer = LayerMask.NameToLayer("Water");
+            }, MessageType.Warning);
             
             EditorGUILayout.LabelField("References (Read only)", EditorStyles.boldLabel);
             

@@ -3,6 +3,9 @@
 //    • Copying or referencing source code for the production of new asset store, or public, content is strictly prohibited!
 //    • Uploading this file to a public repository will subject it to an automated DMCA takedown request.
 
+#ifndef WATER_INPUT_INCLUDED
+#define WATER_INPUT_INCLUDED
+
 CBUFFER_START(UnityPerMaterial)
 	float4 _ShallowColor;
 	float4 _BaseColor;
@@ -12,6 +15,7 @@ CBUFFER_START(UnityPerMaterial)
 	//float _Metallic;
 
 	float4 _IntersectionColor;
+	uint _FogSource;
 	float _DepthVertical;
 	float _DepthHorizontal;
 	float _WorldSpaceUV;
@@ -36,9 +40,14 @@ CBUFFER_START(UnityPerMaterial)
 	half _SunReflectionDistortion;
 	half _SunReflectionSize;
 	float _SunReflectionStrength;
+	bool _SunReflectionSharp;
+
 	float _PointSpotLightReflectionStrength;
 	half _PointSpotLightReflectionSize;
 	half _PointSpotLightReflectionDistortion;
+	bool _PointSpotLightReflectionSharp;
+
+
 	float _ReflectionDistortion;
 	float _ReflectionBlur;
 	float _ReflectionFresnel;
@@ -69,11 +78,14 @@ CBUFFER_START(UnityPerMaterial)
 	half _FoamBubblesSpread;
 	half _FoamBubblesStrength;
 	half _FoamDistortion;
+	half2 _DistanceFoamFadeDist;
+	float _DistanceFoamTiling;
 
 	float _FoamTilingDynamic;
 	float _FoamSubTilingDynamic;
 	float _FoamSpeedDynamic;
 	float _FoamSubSpeedDynamic;
+	half _FoamClippingDynamic;
 
 	//Intersection
 	half _IntersectionSource;
@@ -115,12 +127,15 @@ CBUFFER_START(UnityPerMaterial)
 
 	half _UnderwaterSurfaceSmoothness;
 	half _UnderwaterRefractionOffset;
+	half _UnderwaterReflectionStrength;
 
-	half _VertexColorDepth;
+	half _VertexColorTransparency;
 	half _VertexColorWaveFlattening;
 	half _VertexColorFoam;
 
-	bool _ReceiveDynamicEffects;
+	bool _ReceiveDynamicEffectsHeight;
+	half _ReceiveDynamicEffectsFoam;
+	bool _ReceiveDynamicEffectsNormal;
 
 	half _WaveTint;
 	float4 _WaveProfile_TexelSize;
@@ -130,3 +145,5 @@ CBUFFER_START(UnityPerMaterial)
 	float _TessMax;
 //#endif
 CBUFFER_END
+
+#endif

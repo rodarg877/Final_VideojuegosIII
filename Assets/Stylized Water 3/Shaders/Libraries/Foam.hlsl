@@ -7,6 +7,7 @@
 #define WATER_FOAM_INCLUDED
 
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
+#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Color.hlsl" //SRGBToLinear
 #include "Common.hlsl" //PackedUV
 
 TEXTURE2D(_FoamTex);
@@ -47,16 +48,15 @@ float2 SampleFoamLayer(TEXTURE2D_PARAM(tex, samplerName), float2 uv, float2 tili
 }
 
 float2 SampleFoamTexture(TEXTURE2D_PARAM(tex, samplerName), float3 positionWS, float2 uv, float2 tiling, float subTiling, float2 time, float speed, float subSpeed, float slopeMask, float slopeSpeed, float slopeStretch,
-	bool slopeFoamOn, bool distanceFoamOn)
+	bool slopeFoamOn, bool distanceFoamOn, float distanceStart, float distanceEnd, float distanceTiling)
 {
 	float2 foam = SampleFoamLayer(TEXTURE2D_ARGS(tex, samplerName), uv, tiling, time, speed, subTiling, subSpeed);
 
-	#if DISTANCE_FOAM
+	#if _SURFACE_FOAM_DUAL
 	if(distanceFoamOn)
 	{
-		float fadeFactor = DistanceFadeMask(positionWS, 100, 350);
-		float distanceTiling = 0.2;
-		float distanceSpeed = 0.1;
+		float fadeFactor = DistanceFadeMask(positionWS, distanceStart, distanceEnd);
+		float distanceSpeed = speed * 0.1;
 		
 		float4 distanceUV = PackedUV(uv, tiling * distanceTiling, time, speed * distanceSpeed, subTiling * distanceTiling, subSpeed * distanceSpeed);
 
@@ -64,7 +64,7 @@ float2 SampleFoamTexture(TEXTURE2D_PARAM(tex, samplerName), float3 positionWS, f
 		float2 distanceFoam = SampleFoamLayer(TEXTURE2D_ARGS(tex, samplerName), uv, tiling * distanceTiling, time, speed * distanceSpeed, subTiling * distanceTiling, subSpeed * distanceSpeed);
 		#else
 		float2 distanceFoam = SAMPLE_TEXTURE2D(tex, samplerName, distanceUV.xy).rg;
-		distanceFoam *= 2.0;
+		//distanceFoam *= 2.0;
 		#endif
 
 		
@@ -87,9 +87,16 @@ float2 SampleFoamTexture(TEXTURE2D_PARAM(tex, samplerName), float3 positionWS, f
 	return foam;
 }
 
-float2 SampleFoamTexture(float3 positionWS, float2 uv, float2 tiling, float subTiling, float2 time, float speed, float subSpeed, float slopeMask, float slopeSpeed, half slopeStretch, bool slopeFoamOn, bool distanceFoamOn)
+//Backwards compatibility for Dynamic Effects v3.0.2
+float2 SampleFoamTexture(TEXTURE2D_PARAM(tex, samplerName), float3 positionWS, float2 uv, float2 tiling, float subTiling, float2 time, float speed, float subSpeed, float slopeMask, float slopeSpeed, float slopeStretch,
+	bool slopeFoamOn, bool distanceFoamOn)
 {
-	return SampleFoamTexture(TEXTURE2D_ARGS(_FoamTex, sampler_FoamTex), positionWS, uv, tiling, subTiling, time, speed, subSpeed, slopeMask, slopeSpeed, slopeStretch, slopeFoamOn, distanceFoamOn);
+	return SampleFoamTexture(TEXTURE2D_ARGS(_FoamTex, sampler_FoamTex), positionWS, uv, tiling, subTiling, time, speed, subSpeed, slopeMask, slopeSpeed, slopeStretch, slopeFoamOn, distanceFoamOn, 100, 350, 0.1);
+}
+
+float2 SampleFoamTexture(float3 positionWS, float2 uv, float2 tiling, float subTiling, float2 time, float speed, float subSpeed, float slopeMask, float slopeSpeed, half slopeStretch, bool slopeFoamOn, bool distanceFoamOn, float distanceStart, float distanceEnd, float distanceTiling)
+{
+	return SampleFoamTexture(TEXTURE2D_ARGS(_FoamTex, sampler_FoamTex), positionWS, uv, tiling, subTiling, time, speed, subSpeed, slopeMask, slopeSpeed, slopeStretch, slopeFoamOn, distanceFoamOn, distanceStart, distanceEnd, distanceTiling);
 }
 
 TEXTURE2D(_IntersectionNoise);

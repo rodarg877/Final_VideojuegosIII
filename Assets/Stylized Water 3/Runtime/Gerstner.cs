@@ -24,10 +24,12 @@ namespace StylizedWater3
                 if (WaterObject.CustomTime > 0) return WaterObject.CustomTime;
                 
 #if UNITY_EDITOR
-                return Application.isPlaying ? Time.time : Shader.GetGlobalVector(TimeParametersID).x;
+                float time = Application.isPlaying ? Time.time : Time.realtimeSinceStartup;
 #else
-                return Time.time;
+                float time = Time.time;
 #endif
+
+                return time;
             }
         }
 

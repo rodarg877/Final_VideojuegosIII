@@ -18,45 +18,55 @@ ScriptedImporter:
     lightCookies: 0
     additionalLightCaustics: 1
     additionalLightTranslucency: 1
+    singleCausticsLayer: 0
     customIncludeDirectives:
     - enabled: 1
       type: 0
       value: float _MyParameter;
     - enabled: 0
-      type: 3
+      type: 4
       value: QUAD_NORMAL_SAMPLES
     - enabled: 0
-      type: 3
+      type: 4
       value: PIXELIZE_UV
     - enabled: 0
-      type: 3
+      type: 4
       value: INTERSECTION_REFRACTION
-    - enabled: 1
-      type: 3
-      value: DISPLACEMENT_BUFFER_PER_VERTEX
-    additionalPasses:
-    - {fileID: 10900000, guid: 1568d394910f427499ec893ef4723b27, type: 3}
+    additionalPasses: []
   dependencies:
-  - Assets/Stylized Water 3/Shaders/Underwater/UnderwaterPass.hlsl
-  - Assets/Stylized Water 3/Shaders/Libraries/URP.hlsl
-  - Assets/Stylized Water 3/Shaders/Libraries/Input.hlsl
-  - Assets/Stylized Water 3/Shaders/Libraries/Common.hlsl
-  - Assets/Stylized Water 3/Shaders/Libraries/Fog.hlsl
-  - Assets/Stylized Water 3/Shaders/Libraries/Terrain.hlsl
-  - Assets/Stylized Water 3/Shaders/Libraries/Waves.hlsl
-  - Assets/Stylized Water 3/Shaders/Libraries/Gerstner.hlsl
-  - Assets/Stylized Water 3/Shaders/Libraries/Lighting.hlsl
-  - Assets/Stylized Water 3/Shaders/Libraries/Reflections.hlsl
-  - Assets/Stylized Water 3/Shaders/Libraries/Refraction.hlsl
-  - Assets/Stylized Water 3/Shaders/Underwater/UnderwaterFog.hlsl
-  - Assets/Stylized Water 3/Shaders/Underwater/UnderwaterShading.hlsl
-  - Assets/Stylized Water 3/Shaders/Underwater/UnderwaterMask.hlsl
-  - Assets/Stylized Water 3/Shaders/Libraries/Normals.hlsl
-  - Assets/Stylized Water 3/Shaders/Libraries/Foam.hlsl
-  - Assets/Stylized Water 3/Shaders/Libraries/Caustics.hlsl
-  - Assets/Stylized Water 3/Shaders/DynamicEffects/DynamicEffects.hlsl
-  - Assets/Stylized Water 3/Shaders/Libraries/Vertex.hlsl
-  - Assets/Stylized Water 3/Shaders/Libraries/Tesselation.hlsl
-  - Assets/Stylized Water 3/Shaders/Passes/ForwardPass.hlsl
-  - Assets/Stylized Water 3/Shaders/Passes/HeightPrePass.hlsl
-  - Assets/Stylized Water 3/Shaders/Underwater/UnderwaterEffects.hlsl
+  - Packages/com.staggartcreations.stylizedwater3/Shaders/Passes/Underwater/UnderwaterMaskPass.hlsl
+  - Packages/com.staggartcreations.stylizedwater3/Shaders/Libraries/URP.hlsl
+  - Packages/com.staggartcreations.stylizedwater3/Shaders/Libraries/Input.hlsl
+  - Packages/com.staggartcreations.stylizedwater3/Shaders/Libraries/Common.hlsl
+  - Packages/com.staggartcreations.stylizedwater3/Shaders/Libraries/Fog.hlsl
+  - Packages/com.staggartcreations.stylizedwater3/Shaders/Libraries/Terrain.hlsl
+  - Packages/com.staggartcreations.stylizedwater3/Shaders/Libraries/Waves.hlsl
+  - Packages/com.staggartcreations.stylizedwater3/Shaders/Libraries/Gerstner.hlsl
+  - Packages/com.staggartcreations.stylizedwater3/Shaders/Libraries/Lighting.hlsl
+  - Packages/com.staggartcreations.stylizedwater3/Shaders/Libraries/Reflections.hlsl
+  - Packages/com.staggartcreations.stylizedwater3/Shaders/Libraries/Refraction.hlsl
+  - Packages/com.staggartcreations.stylizedwater3/Shaders/DynamicEffects/DynamicEffects.hlsl
+  - Packages/com.staggartcreations.stylizedwater3/Shaders/Underwater/UnderwaterFog.hlsl
+  - Packages/com.staggartcreations.stylizedwater3/Shaders/Underwater/UnderwaterShading.hlsl
+  - Packages/com.staggartcreations.stylizedwater3/Shaders/Underwater/UnderwaterMask.hlsl
+  - Packages/com.staggartcreations.stylizedwater3/Shaders/Underwater/UnderwaterLighting.hlsl
+  - Packages/com.staggartcreations.stylizedwater3/Shaders/Libraries/Normals.hlsl
+  - Packages/com.staggartcreations.stylizedwater3/Shaders/Libraries/Foam.hlsl
+  - Packages/com.staggartcreations.stylizedwater3/Shaders/Libraries/Caustics.hlsl
+  - Packages/com.staggartcreations.stylizedwater3/Shaders/Libraries/Vertex.hlsl
+  - Packages/com.staggartcreations.stylizedwater3/Shaders/Libraries/Tesselation.hlsl
+  - Packages/com.staggartcreations.stylizedwater3/Shaders/Passes/ForwardPass.hlsl
+  - Packages/com.staggartcreations.stylizedwater3/Shaders/Passes/HeightPrePass.hlsl
+  configurationState:
+    underwaterRendering: 1
+    dynamicEffects: 1
+    fogIntegration:
+      name: Default Unity
+      asset: 1
+      libraryGUID: 
+      url: 
+      underwaterCompatible: 1
+      thumbnailBytes: 
+      thumbnail: {fileID: 7123690520299862052, guid: 0000000000000000d000000000000000, type: 0}
+      installed: 1
+      includeWithPragmas: 1

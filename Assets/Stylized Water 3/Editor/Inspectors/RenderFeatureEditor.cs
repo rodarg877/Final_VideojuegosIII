@@ -13,6 +13,8 @@ namespace StylizedWater3
     [CustomEditor(typeof(StylizedWaterRenderFeature))]
     public partial class RenderFeatureEditor : Editor
     {
+        private StylizedWaterRenderFeature renderFeature;
+        
         private SerializedProperty screenSpaceReflectionSettings;
         
         private SerializedProperty allowDirectionalCaustics;
@@ -22,6 +24,8 @@ namespace StylizedWater3
 
         private void OnEnable()
         {
+            renderFeature = (StylizedWaterRenderFeature)target;
+            
             screenSpaceReflectionSettings = serializedObject.FindProperty("screenSpaceReflectionSettings");
             
             allowDirectionalCaustics = serializedObject.FindProperty("allowDirectionalCaustics");
@@ -33,6 +37,7 @@ namespace StylizedWater3
 
             EnableFlowMapEditor();
             DynamicEffectsOnEnable();
+            UnderwaterRenderingOnEnable();
         }
         
         public override void OnInspectorGUI()
@@ -55,19 +60,28 @@ namespace StylizedWater3
             
             UI.DrawNotification(PipelineUtilities.RenderGraphEnabled() == false, "Render Graph is disabled, functionality on this render feature will not be functional", "Enable", () =>
             {
-                UnityEngine.Rendering.Universal.RenderGraphSettings settings = UnityEngine.Rendering.GraphicsSettings.GetRenderPipelineSettings<UnityEngine.Rendering.Universal.RenderGraphSettings>();
-                settings.enableRenderCompatibilityMode = false;
+                PipelineUtilities.SetRenderGraphCompatibilityMode(false);
             }, MessageType.Error);
 
             serializedObject.Update();
             EditorGUI.BeginChangeCheck();
+            
+            UI.DrawNotification(renderFeature.heightReadbackCS == null, "A compute shader is not assigned to the render feature. Do not add render features in Play mode!", "Attempt fix", () =>
+            {
+                renderFeature.VerifyReferences();
+            }, MessageType.Error);
 
             EditorGUILayout.PropertyField(allowDirectionalCaustics);
             
             EditorGUILayout.Space();
             
             EditorGUILayout.PropertyField(screenSpaceReflectionSettings);
-            if(screenSpaceReflectionSettings.isExpanded) EditorGUILayout.HelpBox("This feature is available for preview, no configurable settings are available yet", MessageType.Info);
+
+            if (renderFeature.screenSpaceReflectionSettings.reflectEverything && screenSpaceReflectionSettings.isExpanded)
+            {
+                UI.DrawNotification("Enabling this option bypasses failed reflection ray filtering." +
+                                    "\n\nReflection artefacts are to be expected!", MessageType.Warning);
+            }
             
             EditorGUILayout.Space();
             
@@ -86,22 +100,28 @@ namespace StylizedWater3
                     EditorGUILayout.HelpBox(statsText, MessageType.None);
                 }
                 
-                EditorGUILayout.HelpBox("This will pre-render all the water geometry's height (including any displacement effects) into a buffer. Allowing other shaders to access this information." +
+                EditorGUILayout.HelpBox("This will pre-render all the height (including any displacement effects) of all water objects (on the Watter layer!) into a buffer. Allowing other shaders to access this information." +
                                         "\n\nSee the Height.hlsl shader library for the API, or use the \"Sample Water Height\" Sub-graph in Shader Graph." +
-                                        "\n\nThis is for advanced users, and the \"GPU Async Readback\" buoyancy API makes use of this", MessageType.Info);
+                                        "\n\nThis is for advanced users, and Water Decals and the \"GPU Async Readback\" height readback API makes use of this", MessageType.Info);
                 if (HeightQuerySystem.RequiresHeightPrepass)
                 {
                     EditorGUILayout.HelpBox("Height Pre-pass is forcible enabled at the moment, because there are height queries being issued from script.", MessageType.Info);
                     
-                    using (new EditorGUILayout.HorizontalScope())
-                    {
-                        EditorGUILayout.LabelField("");
+                    
+                }
+            }
+            
+            EditorGUILayout.Space();
 
-                        if (GUILayout.Button(new GUIContent(" Inspect Queries", EditorGUIUtility.FindTexture("_Help"))))
-                        {
-                            HeightQuerySystemEditor.HeightQueryInspector.Open();
-                        }
-                    }
+            EditorGUILayout.LabelField("GPU Height Queries", EditorStyles.boldLabel);
+            HeightQuerySystem.DISABLE_IN_EDIT_MODE = EditorGUILayout.Toggle("Forced Disable In Edit-mode", HeightQuerySystem.DISABLE_IN_EDIT_MODE);
+            using (new EditorGUILayout.HorizontalScope())
+            {
+                EditorGUILayout.LabelField("");
+
+                if (GUILayout.Button(new GUIContent(" Inspect Queries", EditorGUIUtility.FindTexture("_Help"))))
+                {
+                    HeightQuerySystemEditor.HeightQueryInspector.Open();
                 }
             }
             
@@ -119,6 +139,7 @@ namespace StylizedWater3
             
             DrawFlowMapEditor();
             DynamicEffectsOnInspectorGUI();
+            UnderwaterRenderingOnInspectorGUI();
             
             UI.DrawFooter();
         }
@@ -128,6 +149,9 @@ namespace StylizedWater3
         
         partial void DynamicEffectsOnEnable();
         partial void DynamicEffectsOnInspectorGUI();
+        
+        partial void UnderwaterRenderingOnEnable();
+        partial void UnderwaterRenderingOnInspectorGUI();
     }
 }
 #endif

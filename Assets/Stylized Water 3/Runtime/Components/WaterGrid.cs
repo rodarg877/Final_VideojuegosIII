@@ -155,7 +155,11 @@ namespace StylizedWater3
         private void RecreateMesh()
         {
             CalculateTileSize();
+            
             float m_vertexDistance = vertexDistance * this.transform.lossyScale.x;
+            
+            //Value should never be larger than an individual tile
+            m_vertexDistance = Mathf.Min(m_vertexDistance, tileSize);
 
             mesh = WaterMesh.Create(WaterMesh.Shape.Rectangle, tileSize, m_vertexDistance, tileSize);
         }

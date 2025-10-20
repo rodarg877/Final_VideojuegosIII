@@ -40,11 +40,11 @@ namespace StylizedWater3
                  "\n\n" +
                  "This does not include to post-processing fog effects!")]
         public bool enableFog;
+        [Tooltip("Also render for the scene-view camera. This may be prone to some issues, such a console errors.")]
+        public bool enableInSceneView = true;
 
         //Quality
         public bool renderShadows;
-        [Tooltip("Objects beyond this range aren't rendered into the reflection. Note that this may causes popping for large/tall objects.")]
-		public float renderRange = 500f;
         [Range(0.25f, 1f)] 
         [Tooltip("A multiplier for the rendering resolution, based on the current screen resolution. The render scale, as configured in the pipeline settings is multiplied over this.")]
 		public float renderScale = 0.75f;
@@ -62,7 +62,6 @@ namespace StylizedWater3
         public Bounds bounds = new Bounds();
 
         private float m_renderScale = 1f;
-        private float m_renderRange;
 
         /// <summary>
         /// Reflections will only render if this is true. Value can be set through the static SetQuality function
@@ -79,6 +78,8 @@ namespace StylizedWater3
 
         private Camera m_reflectionCamera;
 		private static UniversalAdditionalCameraData m_cameraData;
+
+        private bool isUnderwater;
         
         private void Reset()
         {
@@ -102,7 +103,6 @@ namespace StylizedWater3
         public void InitializeValues()
         {
             m_renderScale = renderScale;
-            m_renderRange = renderRange;
         }
 
         /// <summary>
@@ -115,20 +115,21 @@ namespace StylizedWater3
             EnableMaterialReflectionSampling();
         }
 
+        [Obsolete("renderRange parameter has been deprecated. Use the SetQuality overload with this argument instead.")]
+        public static void SetQuality(bool enableReflections, float renderScale = -1f, float renderRange = -1f, int maxLodLevel = -1) { }
+
         /// <summary>
         /// Toggle reflections or set the render scale for all reflection renderers. This can be tied into performance scaling or graphics settings in menus
         /// </summary>
         /// <param name="enableReflections">Toggles rendering of reflections, and toggles it on all the assigned water objects</param>
         /// <param name="renderScale">A multiplier for the current screen resolution. Note that the render scale configured in URP is also taken into account</param>
-        /// <param name="renderRange">Objects beyond this range aren't rendered into the reflection</param>
-        public static void SetQuality(bool enableReflections, float renderScale = -1f, float renderRange = -1f, int maxLodLevel = -1)
+        public static void SetQuality(bool enableReflections, float renderScale = -1f, int maxLodLevel = -1)
         {
             AllowReflections = enableReflections;
             
             foreach (PlanarReflectionRenderer renderer in Instances)
             {
                 if (renderScale > 0) renderer.renderScale = renderScale;
-                if (renderRange > 0) renderer.renderRange = renderRange;
                 if (maxLodLevel >= 0) renderer.maximumLODLevel = maxLodLevel;
                 renderer.InitializeValues();
 
@@ -203,19 +204,29 @@ namespace StylizedWater3
             bounds = CalculateBounds();
         }
 
-        public static bool InvalidContext(Camera camera)
+        public bool InvalidContext(Camera targetCamera)
         {
+            //Definitely reject any reflection cameras!
+            if (targetCamera.hideFlags == HideFlags.DontSave) return true;
+            
+            CameraType cameraType = targetCamera.cameraType;
+            
             #if UNITY_EDITOR
+            if (enableInSceneView == false && cameraType == CameraType.SceneView) return true;
+            
+            //During the compilation of shaders reflection rendering is prone to causing issue, and can break the render pipeline
+            if(UnityEditor.ShaderUtil.anythingCompiling) return true;
+            
             //Avoid the "Screen position outside of frustrum" error
-            if (camera.orthographic && Vector3.Dot(Vector3.up, camera.transform.up) > 0.9999f) return true;
+            if (targetCamera.orthographic && Vector3.Dot(Vector3.up, targetCamera.transform.up) > 0.9999f) return true;
             
             //Causes an internal error in URP's rendering code in the CopyColorPass
-            if (camera.cameraType == CameraType.SceneView && UnityEditor.SceneView.lastActiveSceneView && UnityEditor.SceneView.lastActiveSceneView.isUsingSceneFiltering) return true;
+            if (targetCamera.cameraType == CameraType.SceneView && UnityEditor.SceneView.lastActiveSceneView && UnityEditor.SceneView.lastActiveSceneView.isUsingSceneFiltering) return true;
             #endif
             
             //Skip for any special use camera's (except scene view camera)
             //Note: Scene camera still rendering even if window not focused!
-            return (camera.cameraType != CameraType.SceneView && (camera.cameraType == CameraType.Reflection || camera.cameraType == CameraType.Preview || camera.hideFlags != HideFlags.None));
+            return (cameraType != CameraType.SceneView && (cameraType == CameraType.Reflection || cameraType == CameraType.Preview || hideFlags != HideFlags.None));
         }
 
         private void OnWillRenderCamera(ScriptableRenderContext context, Camera camera)
@@ -230,7 +241,6 @@ namespace StylizedWater3
             
             if (isRendering == false) return;
             
-            
             if (moveWithTransform) bounds.center = this.transform.position;
 
             m_cameraData = camera.GetComponent<UniversalAdditionalCameraData>();
@@ -243,7 +253,7 @@ namespace StylizedWater3
             if (!m_reflectionCamera) return;
             
             UnityEngine.Profiling.Profiler.BeginSample("Planar Water Reflections", camera);
-
+            
             //Render scale changed
             if (Math.Abs(renderScale - m_renderScale) > 0.001f)
             {
@@ -252,7 +262,7 @@ namespace StylizedWater3
 
                 m_renderScale = renderScale;
             }
-
+            
             UpdateWaterProperties(m_reflectionCamera);
             
             UpdateCameraProperties(camera, m_reflectionCamera);
@@ -264,7 +274,7 @@ namespace StylizedWater3
             int maxLODLevel = QualitySettings.maximumLODLevel;
             QualitySettings.maximumLODLevel = maximumLODLevel;
             GL.invertCulling = true;
-
+            
             RenderReflection(context, m_reflectionCamera);
 
             if (fogEnabled) SetFogState(true);
@@ -413,10 +423,17 @@ namespace StylizedWater3
             newCamera.clearFlags = includeSkybox ? CameraClearFlags.Skybox : CameraClearFlags.Depth;
             //Required to maintain the alpha channel for the scene view
             newCamera.backgroundColor = Color.clear;
+            
+            //Occlusion culling has to be disabled, otherwise objects culled by the main camera will be culled for the reflection camera
+            //Setting the culling matrix for the camera doesn't appear to have any effect
             newCamera.useOcclusionCulling = false;
 
             //Component required for the UniversalRenderPipeline.RenderSingleCamera call
-            UniversalAdditionalCameraData data = newCamera.gameObject.AddComponent<UniversalAdditionalCameraData>();
+            if (newCamera.gameObject.TryGetComponent<UniversalAdditionalCameraData>(out var data) == false)
+            {
+                data = newCamera.gameObject.AddComponent<UniversalAdditionalCameraData>();
+            }
+            
             data.requiresDepthTexture = false;
             data.requiresColorTexture = false;
             data.renderShadows = renderShadows;
@@ -464,6 +481,7 @@ namespace StylizedWater3
             {
                 if (waterObjects[i] == null) continue;
                 
+                waterObjects[i].props.SetFloat(_PlanarReflectionsEnabledID, 1);
                 waterObjects[i].props.SetTexture(_PlanarReflectionID, cam.targetTexture);
                 waterObjects[i].ApplyInstancedProperties();
             }
@@ -484,7 +502,6 @@ namespace StylizedWater3
             reflectionCam.fieldOfView = source.fieldOfView;
             reflectionCam.orthographic = source.orthographic;
             reflectionCam.orthographicSize = source.orthographicSize;
-            reflectionCam.useOcclusionCulling = source.useOcclusionCulling;
         }
 
         private void UpdatePerspective(Camera source, Camera reflectionCam)
@@ -492,6 +509,10 @@ namespace StylizedWater3
             if (!source || !reflectionCam) return;
 
             Vector3 normal = rotatable ? this.transform.up : Vector3.up;
+
+            isUnderwater = (source.transform.position.y < bounds.center.y);
+
+            if (isUnderwater) normal = -Vector3.up;
             
             Vector3 position = bounds.center + (normal * offset);
 
@@ -520,23 +541,11 @@ namespace StylizedWater3
             reflectionCam.cullingMask = ~(1 << 4) & cullingMask;;
             m_reflectionCamera.clearFlags = includeSkybox ? CameraClearFlags.Skybox : CameraClearFlags.Depth;
             
-            #if !UNITY_2023_3_OR_NEWER
-            //Only re-apply on value change
-            if (m_renderRange != renderRange)
-            {
-                m_renderRange = renderRange;
-                
-                for (int i = 0; i < layerCullDistances.Length; i++)
-                {
-                    layerCullDistances[i] = renderRange;
-                }
-            }
-            reflectionCam.layerCullDistances = layerCullDistances;
-            reflectionCam.layerCullSpherical = true;
-            #endif
-
             reflectionCam.projectionMatrix = projectionMatrix;
             reflectionCam.worldToCameraMatrix = viewMatrix;
+
+            //Unfortunately has to effect, camera appears ti use the culling matrix from the source camera anyway
+            reflectionCam.cullingMatrix = projectionMatrix * viewMatrix;
         }
 
         // Calculates reflection matrix around the given plane

@@ -11,11 +11,13 @@ namespace StylizedWater3
     [AddComponentMenu("Stylized Water 3/Water Position Offset")]
     public class SetWaterPositionOffset : MonoBehaviour
     {
+		public bool negate;
+		
         private void Update()
         {
             //Note: in a floating origin system, apply the value after offsetting all the transforms!
             //Otherwise the water geometry gets shifted in one frame, and this offset is applied the next. This induces a jitter.
-            StylizedWater3.WaterObject.PositionOffset = this.transform.position;
+            StylizedWater3.WaterObject.PositionOffset = negate ? -this.transform.position : this.transform.position;
         }
 
         private void OnDisable()

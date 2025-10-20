@@ -41,7 +41,7 @@ namespace StylizedWater3
             minFieldRect = labelRect;
             minFieldRect.x = labelRect.x + labelRect.width;
             minFieldRect.width = EditorGUIUtility.fieldWidth;
-            EditorGUI.FloatField(minFieldRect, minVal);
+            minVal = EditorGUI.FloatField(minFieldRect, minVal);
 
             sliderFieldRect = labelRect;
             sliderFieldRect.x = minFieldRect.x + minFieldRect.width + 5f;
@@ -52,7 +52,7 @@ namespace StylizedWater3
             maxFieldRect = labelRect;
             maxFieldRect.x = sliderFieldRect.x + sliderFieldRect.width + 5f;
             maxFieldRect.width = EditorGUIUtility.fieldWidth;
-            EditorGUI.FloatField(maxFieldRect, maxVal);
+            maxVal = EditorGUI.FloatField(maxFieldRect, maxVal);
             
             if (EditorGUI.EndChangeCheck())
             {

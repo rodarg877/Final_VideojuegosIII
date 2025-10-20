@@ -9,14 +9,17 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using UnityEditor;
+using UnityEditor.Rendering;
 using UnityEditorInternal;
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
+using UnityEngine.Serialization;
 using Debug = UnityEngine.Debug;
 using Object = UnityEngine.Object;
 
 namespace StylizedWater3
 {
-    [ScriptedImporter(AssetInfo.SHADER_GENERATOR_VERSION_MAJOR + AssetInfo.SHADER_GENERATOR_MINOR + AssetInfo.SHADER_GENERATOR_PATCH, TARGET_FILE_EXTENSION, 0)]
+    [ScriptedImporter(TemplateParser.SHADER_GENERATOR_VERSION_MAJOR + TemplateParser.SHADER_GENERATOR_MINOR + TemplateParser.SHADER_GENERATOR_PATCH, TARGET_FILE_EXTENSION, 0)]
     public class WaterShaderImporter : ScriptedImporter
     {
         private const string TARGET_FILE_EXTENSION = "watershader3";
@@ -25,10 +28,10 @@ namespace StylizedWater3
         [Tooltip("Rather than storing the template in this file, it can be sourced from an external text file" +
                  "\nUse this if you intent to duplicate this asset, and need only minor modifications to its import settings")]
         [SerializeField] public LazyLoadReference<Object> template;
-            
+
         [Space]
-        
-        public WaterShaderSettings settings;
+
+        public WaterShaderSettings settings = new WaterShaderSettings();
 
         /// <summary>
         /// File paths of any file this shader depends on. This list will be populated with any "#include" paths present in the template
@@ -36,6 +39,24 @@ namespace StylizedWater3
         /// </summary>
         //[NonSerialized] //Want to keep these serialized. Will differ per-project, which also causes the file to appear as changed for every project when updating the asset (this triggers a re-import)
         public List<string> dependencies = new List<string>();
+
+        [Serializable]
+        //Keep track of what was being compiled in
+        //Used to detect discrepencies between the project state, and the compiled shader
+        public class ConfigurationState
+        {
+            public bool underwaterRendering;
+            public bool dynamicEffects;
+            public FogIntegration.Integration fogIntegration;
+
+            public void Reset()
+            {
+                underwaterRendering = false;
+                dynamicEffects = false;
+                fogIntegration = FogIntegration.GetIntegration(FogIntegration.Assets.None);
+            }
+        }
+        public ConfigurationState configurationState = new ConfigurationState();
         
         public string GetTemplatePath()
         {
@@ -51,7 +72,7 @@ namespace StylizedWater3
         {
             Shader shader = AssetDatabase.LoadAssetAtPath<Shader>(context.assetPath);
             //if (shader != null) ShaderUtil.ClearShaderMessages(shader);
-            
+
             string templatePath = GetTemplatePath();
 
             if (templatePath == string.Empty)
@@ -74,10 +95,25 @@ namespace StylizedWater3
             }
 
             dependencies.Clear();
+
+            configurationState.Reset();
             
             string shaderLab = TemplateParser.CreateShaderCode(context.assetPath, ref lines, this, false);
             
             Shader shaderAsset = ShaderUtil.CreateShaderAsset(shaderLab, true);
+            
+            int passCount = shaderAsset.passCount;
+
+            ShaderInfo shaderInfo = ShaderUtil.GetShaderInfo(shaderAsset);
+            ShaderData shaderData = ShaderUtil.GetShaderData(shaderAsset);
+            
+            //Unity will always create 3 base passes: Unnamed, DepthNormalsOnly & DepthOnly
+            if (shaderInfo.hasErrors && shaderData.GetSubshader(0).GetPass(0).Name.Contains("Unnamed"))
+            {
+                Debug.LogError($"Failed to compile water shader at {context.assetPath}. It contains no passes. " +
+                               $"This may happen if the shader file was imported while one or more script compile errors were present, or moving the Stylized Water 3 folder, or the meta-file was deleted. Resulting in all configurations getting wiped. To resolve this, re-import the file from the Package Manager.");
+                return;
+            }
             ShaderUtil.RegisterShader(shaderAsset);
             
             Texture2D thumbnail = Resources.Load<Texture2D>(ICON_NAME);
@@ -118,6 +154,33 @@ namespace StylizedWater3
             sw.Stop();
             //Debug.Log($"Imported \"{Path.GetFileNameWithoutExtension(assetPath)}\" water shader in {sw.Elapsed.Milliseconds}ms. With {dependencies.Count} dependencies.", shader);
             #endif
+        }
+        
+        public bool RequiresRecompilation(out string message)
+        {
+            bool isValid = true;
+                
+            var underwaterInstalled = configurationState.underwaterRendering == StylizedWaterEditor.UnderwaterRenderingInstalled();
+            var dynamicEffectsInstalled = configurationState.dynamicEffects == StylizedWaterEditor.DynamicEffectsInstalled();
+            var fogIntegration = configurationState.fogIntegration.asset == GetFogIntegration().asset;
+
+            isValid = underwaterInstalled & dynamicEffectsInstalled & fogIntegration;
+
+            message = string.Empty;
+            
+            if (isValid == false)
+            {
+                if (!underwaterInstalled) message += "\nUnderwater Rendering extension installed, but not activated";
+                if (!dynamicEffectsInstalled) message += "\nDynamic Effects extension installed, but not activated";
+                if (!fogIntegration) message += $"\nFog integration does not match.\nInstalled: {configurationState.fogIntegration.name} - Detected in project: {GetFogIntegration().name}";
+            }
+            
+            return !isValid;
+        }
+
+        public void Reimport()
+        {
+            this.SaveAndReimport();
         }
 
         public void ClearCache(bool recompile = false)
@@ -161,11 +224,17 @@ namespace StylizedWater3
         [UnityEditor.Callbacks.OnOpenAsset]
         public static bool OnOpenAsset(int instanceID, int line)
         {
+            #if UNITY_6000_3_OR_NEWER
+            Object target = EditorUtility.EntityIdToObject(instanceID);
+            EntityId id = (EntityId)instanceID;
+            #else
             Object target = EditorUtility.InstanceIDToObject(instanceID);
+            int id = instanceID;
+            #endif
 
             if (target is Shader)
             {
-                var path = AssetDatabase.GetAssetPath(instanceID);
+                var path = AssetDatabase.GetAssetPath(id);
                 
                 if (Path.GetExtension(path) != "." + TARGET_FILE_EXTENSION) return false;
 
@@ -186,6 +255,16 @@ namespace StylizedWater3
             return false;
         }
 
+        public static WaterShaderImporter GetForShader(Shader shader)
+        {
+            return AssetImporter.GetAtPath(AssetDatabase.GetAssetOrScenePath(shader)) as WaterShaderImporter;
+        }
+
+        public Shader GetShader()
+        {
+            return AssetDatabase.LoadAssetAtPath<Shader>(assetPath);
+        }
+
         [Serializable]
         public class Directive
         {
@@ -197,6 +276,8 @@ namespace StylizedWater3
                 include,
                 [InspectorName("#pragma")]
                 pragma,
+                [InspectorName("#include_with_pragmas")]
+                include_with_pragmas,
                 [InspectorName("#define")]
                 define
             }
@@ -218,7 +299,7 @@ namespace StylizedWater3
             FileInfo[] fileInfos = directoryInfo.GetFiles("*." + TARGET_FILE_EXTENSION, SearchOption.AllDirectories);
             
             #if SWS_DEV
-            Debug.Log($"{fileInfos.Length} .{TARGET_FILE_EXTENSION} assets found");
+            //Debug.Log($"{fileInfos.Length} .{TARGET_FILE_EXTENSION} assets found");
             #endif
 
             string[] filePaths = new string[fileInfos.Length];
@@ -240,10 +321,15 @@ namespace StylizedWater3
             foreach (var filePath in filePaths)
             {
                 #if SWS_DEV
-                Debug.Log($"Reimporting: {filePath}");
+                //Debug.Log($"Reimporting: {filePath}");
                 #endif
                 AssetDatabase.ImportAsset(filePath);
             }
+        }
+
+        public FogIntegration.Integration GetFogIntegration()
+        {
+            return settings != null && settings.autoIntegration ? FogIntegration.GetFirstInstalled() : FogIntegration.GetIntegration(settings.fogIntegration);
         }
 
         [Serializable]
@@ -269,10 +355,13 @@ namespace StylizedWater3
             [Tooltip("Point and spot lights add caustics")]
             public bool additionalLightCaustics = false;
             public bool additionalLightTranslucency = true;
+            [Tooltip("When disabled, two caustics textures are cross-animated. Disable this when using a flipbook caustics texture!")]
+            public bool singleCausticsLayer;
             
             public List<Directive> customIncludeDirectives = new List<Directive>();
-            [Tooltip("Additional Pass blocks that are to be added to the shader template")]
-            public Object[] additionalPasses = Array.Empty<Object>();
+            [FormerlySerializedAs("passes")]
+            [Tooltip("Pass blocks that are to be added to the shader template")]
+            public Object[] additionalPasses = new Object[0];
         }
     }
 }

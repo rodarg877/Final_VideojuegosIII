@@ -51,6 +51,7 @@ namespace StylizedWater3
                 
                 //CPU input
                 samplePositions = new NativeArray<float3>(MAX_SIZE, Allocator.Persistent, NativeArrayOptions.UninitializedMemory);
+                
                 //GPU input
                 inputPositionBuffer = new GraphicsBuffer(GraphicsBuffer.Target.Structured, MAX_SIZE, 3 * sizeof(float));
                 inputPositionBuffer.name = "Water Height Query: Sample Positions";
@@ -98,10 +99,13 @@ namespace StylizedWater3
                     {
                         int index = request.Value.indices[i];
                         
-                        //NOTE: Slow! Setting items of a NativeArray is slow
+                        //NOTE: Setting items of a NativeArray is slow
                         samplePositions[index] = request.Value.sampler.positions[i];
                     }
                 }
+
+                //Note: unused indices are not initialized.
+                //Compute shader is configured not to sample them. Doing so otherwise causes VRAM corruption on Metal.
             }
 
             //Dispatch the compute shader. The "offsets" array will be populated based on the current GPU buffer contents.
@@ -112,7 +116,8 @@ namespace StylizedWater3
                 PopulateSampleList();
                 
                 cmd.SetBufferData(inputPositionBuffer, samplePositions);
-
+                cmd.SetComputeIntParam(cs, "sampleCount", sampleCount);
+                
                 cmd.SetComputeBufferParam(cs, kernel, "positions", inputPositionBuffer);
                 
                 //Output
@@ -190,24 +195,26 @@ namespace StylizedWater3
                     AsyncRequest request = m_request.Value;
                     
                     int queryLength = request.indices.Count;
-
+                    
                     for (int i = 0; i < queryLength; i++)
                     {
                         //List of indices this request occupies in the query
                         int index = request.indices[i];
 
+                        var waterHeight = outputOffsets[index];
+                        
                         //Height value equals a void do not assign it
-                        if (request.invalidateMisses && EqualsVoid(outputOffsets[index]))
+                        if (request.invalidateMisses && EqualsVoid(waterHeight))
                         {
+                            //Debug.Log($"Height request for {request.label} at index {index} was invalidated (value={waterHeight}).");
                             continue;
                         }
                         
-                        request.sampler.heightValues[i] = outputOffsets[index];
-
-                        //Issue a callback event for the external scripts that issued the request
-                        request.InvokeCallback();
+                        request.sampler.heightValues[i] = waterHeight;
                     }
                     
+                    //Issue a callback event for the external scripts that issued the request
+                    request.InvokeCallback();
                 }
                 outputOffsets.Dispose();
 

@@ -23,6 +23,9 @@ Material:
   - _DEPTHEXP_ON
   - _DEPTH_TEX
   - _INTERSECTIONSHARP_ON
+  - _RECEIVEDYNAMICEFFECTSFOAM_ON
+  - _RECEIVEDYNAMICEFFECTSHEIGHT_ON
+  - _RECEIVEDYNAMICEFFECTSNORMAL_ON
   - _RECEIVEDYNAMICEFFECTS_ON
   - _SHARP_INERSECTION
   - _ZCLIP_ON
@@ -41,7 +44,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _BumpMap:
-        m_Texture: {fileID: 2800000, guid: c94169d55087aee43a4ebd71c975f082, type: 3}
+        m_Texture: {fileID: 2800000, guid: 1a9f5604a68a49c489e90410796483a1, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _BumpMapLarge:
@@ -167,6 +170,7 @@ Material:
     - _FoamWaveAmount: 0
     - _FoamWaveMask: 1
     - _FoamWaveMaskExp: 1
+    - _FogSource: 0
     - _GlossMapScale: 0
     - _Glossiness: 0
     - _GlossyReflections: 0
@@ -177,6 +181,7 @@ Material:
     - _IntersectionFoamOn: 1
     - _IntersectionLength: 1.98
     - _IntersectionRippleDist: 1
+    - _IntersectionRippleSpeed: 2
     - _IntersectionRippleStrength: 0
     - _IntersectionSharp: 1
     - _IntersectionSource: 0
@@ -199,7 +204,9 @@ Material:
     - _PointSpotLightReflectionSize: 0
     - _PointSpotLightReflectionStrength: 10
     - _QueueOffset: 0
-    - _ReceiveDynamicEffects: 1
+    - _ReceiveDynamicEffectsFoam: 1
+    - _ReceiveDynamicEffectsHeight: 1
+    - _ReceiveDynamicEffectsNormal: 1
     - _ReceiveShadows: 0
     - _ReflectionBlur: 0
     - _ReflectionDistortion: 0
@@ -249,8 +256,8 @@ Material:
     - _TranslucencyStrengthDirect: 0.05
     - _UnderwaterRefractionOffset: 0.2
     - _UnderwaterSurfaceSmoothness: 0.8
-    - _VertexColorDepth: 0
     - _VertexColorFoam: 0
+    - _VertexColorTransparency: 0
     - _VertexColorWaveFlattening: 0
     - _WaveDistance: 0.574
     - _WaveFrequency: 1
@@ -277,7 +284,7 @@ Material:
     - _FoamTiling: {r: 0.1, g: 0.1, b: 0, a: 0}
     - _HorizonColor: {r: 0.41037738, g: 0.71931076, b: 1, a: 0}
     - _IntersectionColor: {r: 1, g: 1, b: 1, a: 1}
-    - _NormalTiling: {r: 0.1, g: 0.1, b: 0, a: 0}
+    - _NormalTiling: {r: 0.040000014, g: 0.040000014, b: 0, a: 0}
     - _ShallowColor: {r: 0, g: 2, b: 1.9607843, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
     - _WaveDirection: {r: 1, g: 1, b: 1, a: 1}

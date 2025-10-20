@@ -6,10 +6,6 @@
 #ifndef WATER_WAVES_INCLUDED
 #define WATER_WAVES_INCLUDED
 
-#if !_FLAT_SHADING && (!defined(SHADER_STAGE_VERTEX) || !defined(SHADER_STAGE_DOMAIN)) //Skip normal calculations, would be calculated in pixel shader
-#define CALCULATE_NORMALS
-#endif
-
 #include "Gerstner.hlsl"
 TEXTURE2D(_WaveProfile);
 

@@ -31,9 +31,12 @@ namespace StylizedWater3
         private SerializedProperty lightCookies;
         private SerializedProperty additionalLightCaustics;
         private SerializedProperty additionalLightTranslucency;
+        private SerializedProperty singleCausticsLayers;
 
         private SerializedProperty customIncludeDirectives;
         private SerializedProperty additionalPasses;
+        
+        private SerializedProperty configurationState;
 
         private bool underwaterRenderingInstalled;
         private bool dynamicEffectsInstalled;
@@ -42,6 +45,8 @@ namespace StylizedWater3
 
         private bool showDependencies;
 
+        private ShaderData shaderData;
+        
         public override void OnEnable()
         {
             base.OnEnable();
@@ -65,12 +70,21 @@ namespace StylizedWater3
             lightCookies = settings.FindPropertyRelative("lightCookies");
             additionalLightCaustics = settings.FindPropertyRelative("additionalLightCaustics");
             additionalLightTranslucency = settings.FindPropertyRelative("additionalLightTranslucency");
+            singleCausticsLayers = settings.FindPropertyRelative("singleCausticsLayer");
 
             autoIntegration = settings.FindPropertyRelative("autoIntegration");
             fogIntegration = settings.FindPropertyRelative("fogIntegration");
 
             customIncludeDirectives = settings.FindPropertyRelative("customIncludeDirectives");
             additionalPasses = settings.FindPropertyRelative("additionalPasses");
+            
+            configurationState = serializedObject.FindProperty("configurationState");
+
+            Shader shader = importer.GetShader();
+            if (shader != null)
+            {
+                shaderData = ShaderUtil.GetShaderData(shader);
+            }
         }
 
         public override bool HasPreviewGUI()
@@ -101,7 +115,7 @@ namespace StylizedWater3
             
             if (GUILayout.Button(new GUIContent("  Recompile", EditorGUIUtility.IconContent("RotateTool").image), GUILayout.MinHeight(30f)))
             {
-                importer.SaveAndReimport();
+                importer.Reimport();
                 return;
             }
 
@@ -172,26 +186,20 @@ namespace StylizedWater3
                         }
                     }
 
-                    using (new EditorGUILayout.HorizontalScope())
+                    if (curvedWorldInstalled)
                     {
-                        EditorGUI.indentLevel++;
-                        EditorGUILayout.LabelField("Curved World 2020", GUILayout.MaxWidth(EditorGUIUtility.labelWidth));
-                        EditorGUI.indentLevel--;
-
-                        using (new EditorGUILayout.HorizontalScope(EditorStyles.textField))
+                        using (new EditorGUILayout.HorizontalScope())
                         {
-                            if (curvedWorldInstalled)
+                            EditorGUI.indentLevel++;
+                            EditorGUILayout.LabelField("Curved World 2020", GUILayout.MaxWidth(EditorGUIUtility.labelWidth));
+                            EditorGUI.indentLevel--;
+
+                            using (new EditorGUILayout.HorizontalScope(EditorStyles.textField))
                             {
                                 GUI.contentColor = Color.green;
                                 EditorGUILayout.LabelField("Installed");
+                                GUI.contentColor = defaultColor;
                             }
-                            else
-                            {
-                                GUI.contentColor = new Color(1f, 0.65f, 0f);
-                                EditorGUILayout.LabelField("(Not installed)");
-                            }
-
-                            GUI.contentColor = defaultColor;
                         }
                     }
                 }
@@ -199,7 +207,7 @@ namespace StylizedWater3
                 {
                     EditorGUILayout.PropertyField(fogIntegration);
                 }
-                if (curvedWorldInstalled) EditorGUILayout.HelpBox("Curved World integration must be activated through Window->Amazing Assets->Curved Word (Activator tab)", MessageType.Info);
+                if (curvedWorldInstalled) EditorGUILayout.HelpBox("Curved World integration must be manually activated through minor code changes, see documentation.", MessageType.Info);
                 
                 EditorGUILayout.Space();
 
@@ -208,6 +216,7 @@ namespace StylizedWater3
                 EditorGUILayout.PropertyField(lightCookies);
                 EditorGUILayout.PropertyField(additionalLightCaustics);
                 EditorGUILayout.PropertyField(additionalLightTranslucency);
+                EditorGUILayout.PropertyField(singleCausticsLayers);
             }
 
             EditorGUILayout.Space();
@@ -265,6 +274,19 @@ namespace StylizedWater3
                                         "\nMay be used to insert custom code.", MessageType.Info);
             }
             EditorGUILayout.PropertyField(additionalPasses);
+            if (additionalPasses.isExpanded)
+            {
+                EditorGUILayout.LabelField("Compiled passes:", EditorStyles.miniBoldLabel);
+                if (shaderData != null)
+                {
+                    ShaderData.Subshader subShader = shaderData.GetSubshader(0);
+                    int passCount = subShader.PassCount;
+                    for (int i = 0; i < passCount; i++)
+                    {
+                        EditorGUILayout.LabelField($"{i}: {subShader.GetPass(i).Name}", EditorStyles.miniLabel);
+                    }
+                }
+            }
 
             if (EditorGUI.EndChangeCheck())
             {
@@ -317,6 +339,8 @@ namespace StylizedWater3
             }
             EditorGUILayout.EndFoldoutHeaderGroup();
 
+            //EditorGUILayout.PropertyField(configurationState);
+            
             UI.DrawFooter();
 
             if (shader)

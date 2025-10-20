@@ -23,13 +23,15 @@ namespace StylizedWater3
             private static readonly ProfilingSampler readbackAsyncProfilerSampler = new ProfilingSampler( $"{PROFILER_PREFIX} Readback Async");
 
             private ComputeShader cs;
-            private int kernel;
+            private int kernel = -1;
             
-            public void Setup(ComputeShader heightReadbackCs)
+            public void Setup(StylizedWaterRenderFeature renderFeature, ComputeShader heightReadbackCs)
             {
                 if (!heightReadbackCs)
                 {
-                    throw new Exception("[Stylized Water 3] Height query render pass initialized with an empty compute shader reference. Was it deleted from the project? Or not referenced on the render feature?");
+                    Debug.LogError("[Stylized Water 3] Height query render pass initialized with an empty compute shader reference. Was it deleted from the project? Or not referenced on the render feature?" +
+                                   " This may happen when deleting the Library folder, creating a race condition where the Compute shader isn't yet imported. You should not add render features in play mode!.", renderFeature);
+                    return;
                 }
                 
                 this.cs = heightReadbackCs;
@@ -49,10 +51,7 @@ namespace StylizedWater3
 
             public override void RecordRenderGraph(RenderGraph renderGraph, ContextContainer frameContext)
             {
-                if (HeightQuerySystem.IsSupported() == false)
-                {
-                    return;
-                }
+                if (kernel < 0) return;
                 
                 HeightPrePass.FrameData heightPrePassData = frameContext.Get<HeightPrePass.FrameData>();
                 
@@ -86,8 +85,8 @@ namespace StylizedWater3
 
                 using(var builder = renderGraph.AddUnsafePass("Water Height Query: Async Readback", out PassData passData))
                 {
-                    builder.EnableAsyncCompute(true);
-                    //builder.UseTexture(heightPrePassData._WaterHeightBuffer);
+                    //WebGPU and Nintendo Switch would not support this
+                    builder.EnableAsyncCompute(SystemInfo.supportsAsyncCompute);
                     
                     builder.AllowPassCulling(cull);
                     builder.SetRenderFunc((PassData data, UnsafeGraphContext cgContext) => ExecuteReadback(data, cgContext));
@@ -96,6 +95,10 @@ namespace StylizedWater3
             
             private void ExecuteSampling(PassData data, ComputeGraphContext context)
             {
+                #if UNITY_EDITOR
+                if (HeightQuerySystem.DISABLE_IN_EDIT_MODE && Application.isPlaying == false) return;
+                #endif
+                
                 var cmd = context.cmd;
                 using (new ProfilingScope(cmd, computeProfilerSampler))
                 {
@@ -109,6 +112,10 @@ namespace StylizedWater3
             //Pass using "cmd.RequestAsyncReadbackIntoNativeArray"
             private void ExecuteReadback(PassData data, UnsafeGraphContext context)
             {
+                #if UNITY_EDITOR
+                if (HeightQuerySystem.DISABLE_IN_EDIT_MODE && Application.isPlaying == false) return;
+                #endif
+                
                 var cmd = context.cmd;
                 
                 using (new ProfilingScope(cmd, readbackAsyncProfilerSampler))

@@ -30,6 +30,16 @@ namespace StylizedWater3
 {
     public static class ShaderConfigurator
     {
+        public const string DEFAULT_SHADER_GUID = "823f6b206953b674a9a64f9e3ec57752";
+        
+        public static Shader GetDefaultShader()
+        {
+            string defaultShaderPath = AssetDatabase.GUIDToAssetPath(DEFAULT_SHADER_GUID);
+            Shader defaultShader = AssetDatabase.LoadAssetAtPath<Shader>(defaultShaderPath);
+
+            return defaultShader;
+        }
+        
         public static ShaderMessage[] GetErrorMessages(Shader shader)
         {
             ShaderMessage[] messages = null;

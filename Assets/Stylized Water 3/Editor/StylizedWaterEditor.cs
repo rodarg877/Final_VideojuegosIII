@@ -6,9 +6,11 @@
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.Rendering;
 #if URP
 using System.Collections.Generic;
 using UnityEngine.Rendering.Universal;
+using UnityEngine.SceneManagement;
 #endif
 
 namespace StylizedWater3
@@ -89,8 +91,14 @@ namespace StylizedWater3
             
             if(Application.isPlaying == false) EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
         }
+
+        [MenuItem("Window/Stylized Water 3/Set up render feature", true, 3000)]
+        public static bool SetupRenderFeatureValidate()
+        {
+            return IsRenderFeatureSetup() == false;
+        }
         
-        [MenuItem("Window/Stylized Water 3/Set up render feature", false, 2000)]
+        [MenuItem("Window/Stylized Water 3/Set up render feature", false, 3000)]
         public static void SetupRenderFeature()
         {
             List<ScriptableRendererData> renderers = PipelineUtilities.SetupRenderFeature<StylizedWaterRenderFeature>("Stylized Water 3");
@@ -110,6 +118,36 @@ namespace StylizedWater3
             
             if(Application.isPlaying == false) EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
         }
+        
+        [MenuItem("Window/Stylized Water 3/Create default reflection probe", false, 2000)]
+        public static void CreateDefaultReflectionProbe()
+        {
+            GameObject obj = new GameObject("Skybox Reflection", typeof(ReflectionProbe));
+            Undo.RegisterCreatedObjectUndo(obj, "Created Skybox Reflection");
+            
+            ReflectionProbe probe = obj.GetComponent<ReflectionProbe>();
+
+            probe.mode = ReflectionProbeMode.Realtime;
+            probe.size = Vector3.one * 10000f;
+            probe.cullingMask = 0;
+            probe.shadowDistance = 0;
+            
+            probe.RenderProbe();
+            
+            //Selection.activeObject = obj;
+            
+            if(Application.isPlaying == false) EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
+        }
+
+        [MenuItem("Window/Stylized Water 3/Open demo scene", false, 2000)]
+        public static void OpenDemoScene()
+        {
+            string path = AssetDatabase.GUIDToAssetPath("2477c7e727bfe2f4bba7e621f08fd50b");
+            
+            Scene scene = SceneManager.GetSceneByPath(path);
+
+            EditorSceneManager.OpenScene(path);
+        }
         #endif
         
         [MenuItem("Assets/Create/Water/Mesh")]
@@ -125,7 +163,7 @@ namespace StylizedWater3
 
             if (!t.gameObject.GetComponent<AlignToWater>())
             {
-                t.gameObject.AddComponent<AlignToWater>();
+                Undo.AddComponent<AlignToWater>(t.gameObject);
 
                 EditorUtility.SetDirty(t);
             }
@@ -189,8 +227,8 @@ namespace StylizedWater3
         
         public static bool UnderwaterRenderingInstalled()
         {
-            //Checking for UnderwaterRenderer.cs meta file
-            string path = AssetDatabase.GUIDToAssetPath("57d885066d673c04b850d787a2614e48");
+            //Checking for Extension.UnderwaterRenderer.cs meta file
+            string path = AssetDatabase.GUIDToAssetPath("f8689f15308f4e6da4c0bb17b8b3af04");
             return AssetDatabase.LoadMainAssetAtPath(path);
         }
         
@@ -290,5 +328,15 @@ namespace StylizedWater3
             
             EditorUtility.SetDirty(material);
         }
+
+        #if !SPLINES
+        [MenuItem("Window/Stylized Water 3/Install Splines package", false, 3000)]
+        private static void InstallSplines()
+        {
+            UnityEditor.PackageManager.Client.Add($"com.unity.splines");
+            
+            Debug.Log("The Splines package will be installed in a moment...");
+        }
+        #endif
     }
 }

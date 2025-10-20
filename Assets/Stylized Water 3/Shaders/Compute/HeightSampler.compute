@@ -10,14 +10,19 @@
 
 //Input
 StructuredBuffer<float3> positions;
+uint sampleCount; //Length of 'positions' array
 
 //Output
 RWStructuredBuffer<float> offsets;
 
 [numthreads(THREAD_GROUPS,1,1)]
-void SampleOffsets(uint3 id : SV_DispatchThreadID)
+void SampleOffsets(uint id : SV_DispatchThreadID)
 {
-    const uint index = (uint)(id.x);
+    //Early out when no more positions are left to process
+    //Important for the Metal API, as it avoids accessing unbound array elements!
+    if(id > sampleCount) return;
+    
+    const uint index = (uint)(id);
 
     //Input positions to sample at
     const float3 positionWS = positions[index];
@@ -29,5 +34,5 @@ void SampleOffsets(uint3 id : SV_DispatchThreadID)
     float2 heights = SampleHeightBuffer(uv).rg;
 
     //Output
-    offsets[index] = heights.r + heights.g;
+    offsets[index] = heights.r + heights.g; 
 }

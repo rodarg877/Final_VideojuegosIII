@@ -67,7 +67,11 @@ namespace StylizedWater3
             [Range(0f,1f)]
             [Tooltip("Scale up the steepness value by the wave length, making large waves displace the water more horizontally")]
             public float steepnessByLength;
+
+            [Space]
             
+            [Range(0f,360f)]
+            public float directionBase = 0f;
             [Range(0f, 360)]
             [Tooltip("If at 0, all waves move in a single direction, If at 360, all of them go in a random direction")]
             public float directionAngleVariation = 180f;
@@ -87,13 +91,15 @@ namespace StylizedWater3
                 int layerCount = waveProfile.layers.Length;
                 for (int i = 0; i < layerCount; i++)
                 {
-                    WaveProfile.Wave layer = new WaveProfile.Wave();
+                    if (waveProfile.layers[i] == null) waveProfile.layers[i] = new Wave();
                     
+                    Wave layer = waveProfile.layers[i];
+
                     Random.InitState(seed + i);
 
                     float t = (float)i / (float)layerCount;
 
-                    layer.direction = (Random.Range(-directionAngleVariation, directionAngleVariation));
+                    layer.direction = Mathf.Repeat(directionBase + Random.Range(-directionAngleVariation, directionAngleVariation), 360f);
                     
                     layer.waveLength = Random.Range(minMaxWaveLength.x, minMaxWaveLength.y);
                     
@@ -102,18 +108,16 @@ namespace StylizedWater3
                     
                     layer.steepness = Random.Range(minMaxSteepness.x, minMaxSteepness.y);
                     layer.steepness = ScaleByLength(layer.steepness, minMaxSteepness.x, minMaxSteepness.y, layer.waveLength, steepnessByLength);
-                    
-                    waveProfile.layers[i] = layer;
                 }
                 
                 waveProfile.UpdateShaderParameters();
             }
         }
-        
+
         /// <summary>
         /// House various parameter values used for randomize wave profile creation. Call the <see cref="Apply">Apply</see> function to use the settings to generated randomized wave layers.
         /// </summary>
-        public ProceduralSettings proceduralSettings;
+        public ProceduralSettings proceduralSettings = new ProceduralSettings();
         
         /// <summary>
         /// Class to describe a single Gerstner Wave
@@ -334,6 +338,15 @@ namespace StylizedWater3
                 averageSteepness = activeLayers;
                 averageAmplitude /= activeLayers;
             }
+        }
+
+        /// <summary>
+        /// Assign this wave profile to a material using the Stylized Water 3 shader
+        /// </summary>
+        /// <param name="material"></param>
+        public void ApplyToMaterial(Material material)
+        {
+            material.SetTexture(ShaderParams.Properties._WaveProfile, shaderParametersLUT);
         }
     }
 }

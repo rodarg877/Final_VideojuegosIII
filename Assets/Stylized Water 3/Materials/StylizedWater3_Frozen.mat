@@ -22,6 +22,9 @@ Material:
   - _DEPTH_TEX
   - _FOAM
   - _INTERSECTIONSHARP_ON
+  - _RECEIVEDYNAMICEFFECTSFOAM_ON
+  - _RECEIVEDYNAMICEFFECTSHEIGHT_ON
+  - _RECEIVEDYNAMICEFFECTSNORMAL_ON
   - _RECEIVEDYNAMICEFFECTS_ON
   - _SIMPLE_LIGHTING
   - _VERTEXCOLORWAVEFLATTENING_ON
@@ -190,6 +193,7 @@ Material:
     - _FoamWaveAmount: 0
     - _FoamWaveMask: 0
     - _FoamWaveMaskExp: 1
+    - _FogSource: 0
     - _GlossMapScale: 0
     - _Glossiness: 0
     - _GlossyReflections: 0
@@ -200,6 +204,7 @@ Material:
     - _IntersectionFoamOn: 0
     - _IntersectionLength: 2.27
     - _IntersectionRippleDist: 16
+    - _IntersectionRippleSpeed: 2
     - _IntersectionRippleStrength: 0.125
     - _IntersectionSharp: 1
     - _IntersectionSize: 0.944
@@ -228,7 +233,9 @@ Material:
     - _PointSpotLightReflectionSize: 0.962
     - _PointSpotLightReflectionStrength: 1
     - _QueueOffset: 0
-    - _ReceiveDynamicEffects: 1
+    - _ReceiveDynamicEffectsFoam: 1
+    - _ReceiveDynamicEffectsHeight: 1
+    - _ReceiveDynamicEffectsNormal: 1
     - _ReceiveShadows: 1
     - _ReflectionBlur: 0.139
     - _ReflectionDistortion: 0.374
@@ -282,8 +289,8 @@ Material:
     - _TranslucencyStrengthDirect: 0.05
     - _UnderwaterRefractionOffset: 0.2
     - _UnderwaterSurfaceSmoothness: 0.8
-    - _VertexColorDepth: 0
     - _VertexColorFoam: 0
+    - _VertexColorTransparency: 0
     - _VertexColorWaveFlattening: 1
     - _WaveDistance: 0.775
     - _WaveFrequency: 1

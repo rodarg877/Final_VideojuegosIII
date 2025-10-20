@@ -24,7 +24,7 @@ namespace StylizedWater3
         /// Using this as a value comparison in shader code to determine if not water is being hit
         /// </summary>
         public const float VOID_THRESHOLD = -1000f;
-        private Color targetClearColor = new Color(VOID_THRESHOLD, 0, 0, 0);
+        private static readonly Color targetClearColor = new Color(VOID_THRESHOLD, 0, 0, 0);
         
         [Serializable]
         public class Settings
@@ -38,6 +38,9 @@ namespace StylizedWater3
 
             public int maxResolution = 4096;
 
+            [Tooltip("[When in Play mode] Skips processing the height prepass for the scene-view camera. This helps keep the rendering centered around the main camera when in Play mode.")]
+            public bool disableInSceneView = true;
+            
             /// <summary>
             /// Returns the enabled state, either from the settings or if forced because it is required by other functionality
             /// </summary>
@@ -129,7 +132,7 @@ namespace StylizedWater3
             {
                 //Render target
                 RenderTextureDescriptor renderTargetDescriptor = new RenderTextureDescriptor(resolution, resolution, GraphicsFormat.R16G16_SFloat, 0);
-                passData.renderTarget = UniversalRenderer.CreateRenderGraphTexture(renderGraph, renderTargetDescriptor, BufferName, true, FilterMode.Bilinear, TextureWrapMode.Clamp);
+                passData.renderTarget = UniversalRenderer.CreateRenderGraphTexture(renderGraph, renderTargetDescriptor, BufferName + cameraData.camera.name, true, FilterMode.Bilinear, TextureWrapMode.Clamp);
                 //Store render target in RG, so it can be retrieved in other passes
                 FrameData frameData = frameContext.GetOrCreate<FrameData>();
                 frameData._WaterHeightBuffer = passData.renderTarget;
@@ -173,6 +176,8 @@ namespace StylizedWater3
             }
         }
 
+        private readonly int _WorldSpaceCameraPos = Shader.PropertyToID("_WorldSpaceCameraPos");
+        
         private void Execute(RasterGraphContext context, PassData data)
         {
             var cmd = context.cmd;
@@ -184,12 +189,18 @@ namespace StylizedWater3
                 cmd.EnableShaderKeyword(ShaderParams.Keywords.WaterHeightPass);
                 
                 cmd.SetViewProjectionMatrices(data.planarProjection.view, data.planarProjection.projection);
-                
+                //RenderingUtils.SetViewAndProjectionMatrices(cmd, data.planarProjection.view, data.planarProjection.projection, true);
+				
                 cmd.SetViewport(data.planarProjection.viewportRect);
                 //Is this still needed?
                 //cmd.SetGlobalMatrix("UNITY_MATRIX_V", data.view);
 
                 cmd.SetGlobalVector(_WaterHeightCoords, data.rendererCoords);
+                
+                //Bug? During this pass the camera position sent to shaderland is that of the scene-view camera (if the tab is open)
+                //Possibly the value from the previous frame/camera. This breaks distance-based effects such as waves.
+                //Force an updated value
+                cmd.SetGlobalVector(_WorldSpaceCameraPos, data.planarProjection.center);
 
                 cmd.DrawRendererList(data.rendererListHandle);
                 
@@ -198,11 +209,16 @@ namespace StylizedWater3
             }
         }
 
+        public override void OnCameraCleanup(CommandBuffer cmd)
+        {
+            cmd.SetGlobalVector(_WaterHeightCoords, Vector4.zero);
+            cmd.SetGlobalInt(_WaterHeightPrePassAvailable, 0);
+            cmd.DisableShaderKeyword(ShaderParams.Keywords.WaterHeightPass);
+        }
+
         public void Dispose()
         {
-            Shader.SetGlobalVector(_WaterHeightCoords, Vector4.zero);
-            Shader.SetGlobalInt(_WaterHeightPrePassAvailable, 0);
-            Shader.DisableKeyword(ShaderParams.Keywords.WaterHeightPass);
+            
         }
         
 #pragma warning disable CS0672

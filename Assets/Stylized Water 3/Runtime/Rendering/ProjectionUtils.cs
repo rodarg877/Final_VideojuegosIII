@@ -5,6 +5,7 @@
 
 using System;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace StylizedWater3
 {
@@ -77,6 +78,14 @@ namespace StylizedWater3
             coords.y = boundsMin.z;
             coords.z = scale;
             coords.w = 1; //Enable sampling shaders
+        }
+
+        public void SetProjection(RasterCommandBuffer cmd)
+        {
+            cmd.SetViewProjectionMatrices(view, projection);
+            
+            //Unity 6000.0.30f1+ only
+            //RenderingUtils.SetViewAndProjectionMatrices(cmd, view, projection, true);
         }
         
         public static int CalculateResolution(float scale, int texelsPerUnit, int min, int max)

@@ -62,7 +62,7 @@ HeightPassVaryings HeightPassVertex(HeightPassAttributes input)
 #endif
 	
 	#if DYNAMIC_EFFECTS_ENABLED
-	if(_ReceiveDynamicEffects)
+	if(_ReceiveDynamicEffectsHeight)
 	{
 		float4 effectsData = SampleDynamicEffectsData(positionWS.xyz);
 

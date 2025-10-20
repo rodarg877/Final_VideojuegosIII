@@ -5,12 +5,9 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Rendering;
-using UnityEngine.Rendering.RenderGraphModule;
 
 namespace StylizedWater3
 {
@@ -46,6 +43,7 @@ namespace StylizedWater3
         private int colorChannel = 1;
         private int renderTargetIndex;
         private float exposure = 1f;
+        private int mipmap = 0;
         
         private void OnEnable()
         {
@@ -70,6 +68,7 @@ namespace StylizedWater3
                 renderTargetIndex = EditorGUILayout.Popup($"Render target ({RenderTargetDebugger.renderTargets.Count})", renderTargetIndex, RenderTargetDebugger.renderTargetNames);
             }
             
+            EditorGUILayout.LabelField($"Active camera: {RenderTargetDebugger.CurrentCameraName}", EditorStyles.miniLabel);
             width = (Mathf.Min(this.position.height, this.position.width) * 1f) - 15f;
             scrollPos = EditorGUILayout.BeginScrollView(scrollPos);
 
@@ -112,7 +111,7 @@ namespace StylizedWater3
             //Null at the very first frame
             if (RenderTargetDebugger.CurrentRT.rt == null) return;
             
-            EditorGUILayout.LabelField($"\"{renderTarget.textureName}\" {RenderTargetDebugger.CurrentRT.rt.graphicsFormat} {RenderTargetDebugger.CurrentRT.rt.width}x{RenderTargetDebugger.CurrentRT.rt.height}px @ {(UnityEngine.Profiling.Profiler.GetRuntimeMemorySizeLong(RenderTargetDebugger.CurrentRT) / 1024f / 1024f).ToString("F2")}mb", EditorStyles.boldLabel);
+            EditorGUILayout.LabelField($"\"{renderTarget.textureName}\" {RenderTargetDebugger.CurrentRT.rt.descriptor.graphicsFormat} {RenderTargetDebugger.CurrentRT.rt.width}x{RenderTargetDebugger.CurrentRT.rt.height}px @ {(UnityEngine.Profiling.Profiler.GetRuntimeMemorySizeLong(RenderTargetDebugger.CurrentRT) / 1024f / 1024f).ToString("F2")}mb", EditorStyles.boldLabel);
             if (renderTarget.description != string.Empty) EditorGUILayout.HelpBox(renderTarget.description, MessageType.Info);
             
             Rect rect = EditorGUILayout.GetControlRect();
@@ -148,13 +147,15 @@ namespace StylizedWater3
             }
             else if (colorMask == ColorWriteMask.Alpha)
             {
-                EditorGUI.DrawTextureAlpha(rect, RenderTargetDebugger.CurrentRT, ScaleMode.ScaleToFit, aspect, 0);
+                EditorGUI.DrawTextureAlpha(rect, RenderTargetDebugger.CurrentRT, ScaleMode.ScaleToFit, aspect, mipmap);
             }
             else
             {
-                EditorGUI.DrawPreviewTexture(rect, RenderTargetDebugger.CurrentRT, null, ScaleMode.ScaleToFit, aspect, 0, colorMask, exposure);
+                EditorGUI.DrawPreviewTexture(rect, RenderTargetDebugger.CurrentRT, null, ScaleMode.ScaleToFit, aspect, mipmap, colorMask, exposure);
             }
-            GUILayout.Space(rect.height);
+            GUILayout.Space(rect.height + 10f);
+            
+            mipmap = EditorGUILayout.IntSlider("Mipmap", mipmap, 0, 8);
             exposure = EditorGUILayout.Slider("Exposure", exposure, 1f, 16f);
         }
     }

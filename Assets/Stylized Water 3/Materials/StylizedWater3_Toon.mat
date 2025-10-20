@@ -18,16 +18,23 @@ Material:
   - _NORMALMAP
   - _RECEIVE_SHADOWS_OFF
   - _SPECULARHIGHLIGHTS_OFF
-  - _SURFACE_FOAM
+  - _SURFACE_FOAM_DUAL
+  - _SURFACE_FOAM_SINGLE
   - _UNLIT
   m_InvalidKeywords:
   - ADVANCED_LIGHTING
   - _DEPTHEXP_ON
   - _DEPTH_TEX
   - _FOAM
+  - _FOAMDISTANCEON_ON
+  - _FOAMON_ON
   - _INTERSECTIONSHARP_ON
+  - _RECEIVEDYNAMICEFFECTSFOAM_ON
+  - _RECEIVEDYNAMICEFFECTSHEIGHT_ON
+  - _RECEIVEDYNAMICEFFECTSNORMAL_ON
   - _RECEIVEDYNAMICEFFECTS_ON
   - _SHARP_INERSECTION
+  - _SURFACE_FOAM
   - _WORLDSPACEUV_ON
   - _ZCLIP_ON
   m_LightmapFlags: 4
@@ -164,6 +171,7 @@ Material:
     - _DepthTexture: 1
     - _DepthVertical: 0.01
     - _DisableDepthTexture: 0
+    - _DistanceFoamTiling: 0.5
     - _DistanceNormalsOn: 0
     - _DistanceNormalsTiling: 0.25
     - _DstBlend: 0
@@ -177,7 +185,8 @@ Material:
     - _FoamBubblesSpread: 1
     - _FoamBubblesStrength: 0.217
     - _FoamClipping: 0.5
-    - _FoamDistortion: 0.22
+    - _FoamDistanceOn: 1
+    - _FoamDistortion: 0.34
     - _FoamOn: 1
     - _FoamOpacity: 0.151
     - _FoamSize: 0.771
@@ -193,6 +202,7 @@ Material:
     - _FoamWaveAmount: 0
     - _FoamWaveMask: 0
     - _FoamWaveMaskExp: 1
+    - _FogSource: 0
     - _GlossMapScale: 0
     - _Glossiness: 0
     - _GlossyReflections: 0
@@ -203,6 +213,7 @@ Material:
     - _IntersectionFoamOn: 1
     - _IntersectionLength: 2.72
     - _IntersectionRippleDist: 32
+    - _IntersectionRippleSpeed: 2
     - _IntersectionRippleStrength: 0.251
     - _IntersectionSharp: 1
     - _IntersectionSize: 0.944
@@ -230,7 +241,9 @@ Material:
     - _PointSpotLightReflectionSize: 0
     - _PointSpotLightReflectionStrength: 10
     - _QueueOffset: 0
-    - _ReceiveDynamicEffects: 1
+    - _ReceiveDynamicEffectsFoam: 1
+    - _ReceiveDynamicEffectsHeight: 1
+    - _ReceiveDynamicEffectsNormal: 1
     - _ReceiveShadows: 0
     - _ReflectionBlur: 0.013
     - _ReflectionDistortion: 0.075
@@ -284,8 +297,8 @@ Material:
     - _TranslucencyStrengthDirect: 0.05
     - _UnderwaterRefractionOffset: 0.2
     - _UnderwaterSurfaceSmoothness: 0.8
-    - _VertexColorDepth: 0
     - _VertexColorFoam: 0
+    - _VertexColorTransparency: 0
     - _VertexColorWaveFlattening: 0
     - _WaveDistance: 0.679
     - _WaveFrequency: 1
@@ -305,6 +318,7 @@ Material:
     - _Color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
     - _DepthMapBounds: {r: -402.3, g: -459.43, b: 0.0012693577, a: 0}
     - _Direction: {r: 1, g: 1, b: 0, a: 0}
+    - _DistanceFoamFadeDist: {r: 10, g: 118.15793, b: 0, a: 0}
     - _DistanceNormalsFadeDist: {r: 300, g: 0.25, b: 0, a: 0}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _FoamColor: {r: 1, g: 1, b: 1, a: 1}

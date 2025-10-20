@@ -18,7 +18,7 @@ Material:
   - _NORMALMAP
   - _REFRACTION
   - _RIVER
-  - _SURFACE_FOAM
+  - _SURFACE_FOAM_SINGLE
   - _TRANSLUCENCY
   - _WAVES
   m_InvalidKeywords:
@@ -26,11 +26,16 @@ Material:
   - _DEPTHEXP_ON
   - _DEPTH_TEX
   - _FOAM
+  - _FOAMON_ON
   - _INTERSECTIONSHARP_ON
+  - _RECEIVEDYNAMICEFFECTSHEIGHT_ON
+  - _RECEIVEDYNAMICEFFECTSNORMAL_ON
   - _RECEIVEDYNAMICEFFECTS_ON
   - _SMOOTH_INTERSECTION
+  - _SURFACE_FOAM
   - _VERTEXCOLORDEPTH_ON
   - _VERTEXCOLORFOAM_ON
+  - _VERTEXCOLORTRANSPARENCY_ON
   - _VERTEXCOLORWAVEFLATTENING_ON
   - _WORLDSPACEUV_ON
   - _ZCLIP_ON
@@ -46,14 +51,15 @@ Material:
     m_TexEnvs: []
     m_Ints: []
     m_Floats:
+    - _CausticsBrightness: 2
     - _ColorAbsorption: 0
     - _DepthExp: 1
     - _DepthHorizontal: 0.01
     - _DepthVertical: 10.58
     - _EdgeFade: 4
     - _IntersectionFoamOn: 0
-    - _VertexColorDepth: 1
     - _VertexColorFoam: 1
+    - _VertexColorTransparency: 1
     - _WaveHeight: 0.25
     - _WaveNormalStr: 32
     m_Colors:

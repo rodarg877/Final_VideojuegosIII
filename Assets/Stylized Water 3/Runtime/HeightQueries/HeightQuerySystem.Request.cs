@@ -29,12 +29,15 @@ namespace StylizedWater3
             public Sampler sampler;
             
             /// <summary>
-            /// If the sampling position falls outside of the camera frustum, or is not above a water surface, it will hit a void. A default value of -1000 is then used.
+            /// If the sampling position falls outside the camera frustum, or is not above a water surface, it will hit a void. A default value of -1000 is then used.
             /// Use this option to specify if the (invalid) value should be kept or not. If not, the value will represent that of the last successful hit.
             /// </summary>
             public bool invalidateMisses = true;
             
             //The indices this request occupies in the array
+            
+            //TODO: Allow a request to span over multiple queries. This will work around the limit of 128 sample points.
+            //A request would then reference multiple sets of indices, one per query
             public readonly List<int> indices = new List<int>();
             
             public int SampleCount => indices.Count;
@@ -48,6 +51,11 @@ namespace StylizedWater3
             
             public void Issue()
             {
+                if (IsSupported() == false)
+                {
+                    throw new System.ComponentModel.WarningException(HeightQuerySystem.UNSUPPORTED_MESSAGE);
+                }
+                
                 AddRequest(this);
             }
 

@@ -38,6 +38,11 @@ namespace StylizedWater3
             [Tooltip("Allow SSR to be rendered in water materials that have it enabled." +
                      "\n\nDisable as a global performance scaling measure")]
             public bool allow = true;
+            
+            [FormerlySerializedAs("reflectSkybox")]
+            [Tooltip("Only enable when Reflection Probes cannot be used in a realtime lighting setup. If enabled, SSR will also reflects the skybox color and geometry in front of the water." +
+                     "\n\nIdeally disabled, so that Reflection Probes can be relied on for a 1:1 accurate skybox reflection.")]
+            public bool reflectEverything = false;
         }
         public ScreenSpaceReflectionSettings screenSpaceReflectionSettings = new ScreenSpaceReflectionSettings();
         
@@ -73,6 +78,8 @@ namespace StylizedWater3
         /// Set this to true from a render pass if it requires the displacement pre-pass, despite it being disabled in the render feature settings.
         /// </summary>
         public static bool RequireHeightPrePass;
+
+        protected bool WillExecuteHeightPrePass => RequireHeightPrePass || heightPrePassSettings.enable || HeightQuerySystem.RequiresHeightPrepass;
         
         private void OnValidate()
         {
@@ -84,14 +91,29 @@ namespace StylizedWater3
             VerifyReferences();
         }
         
-        private void VerifyReferences()
+        public void VerifyReferences()
         {
-            if(!heightReadbackCS) heightReadbackCS = (ComputeShader)Resources.Load("HeightSampler");
+            if (!heightReadbackCS)
+            {
+                #if UNITY_EDITOR
+                //HeightSampler.cs
+                string assetPath = UnityEditor.AssetDatabase.GUIDToAssetPath("768e0c28dfdbc6b429fd59518fa03f2d");
+
+                ComputeShader cs = UnityEditor.AssetDatabase.LoadAssetAtPath<ComputeShader>(assetPath);
+
+                if (cs)
+                {
+                    heightReadbackCS = cs;
+                }
+                #endif
+            }
             if(!heightProcessingShader) heightProcessingShader = Shader.Find(ShaderParams.ShaderNames.HeightProcessor);
             
             #if SWS_DEV
             if(!terrainHeightPrePassSettings.terrainHeightVisualizationShader) terrainHeightPrePassSettings.terrainHeightVisualizationShader = Shader.Find(ShaderParams.ShaderNames.TerrainHeight);
             #endif
+
+            VerifyUnderwaterRendering();
         }
         
         public class DebugData : ContextItem
@@ -106,6 +128,14 @@ namespace StylizedWater3
         
         public override void Create()
         {
+            GraphicsDeviceType currentGraphicsAPI = SystemInfo.graphicsDeviceType;
+            //https://issuetracker.unity3d.com/issues/crash-on-gfxdeviced3d12base-drawbufferscommon-when-adding-specific-custom-render-pass-feature-to-renderer
+            if (currentGraphicsAPI == GraphicsDeviceType.Direct3D12 || currentGraphicsAPI == GraphicsDeviceType.XboxOneD3D12)
+            {
+                //Using the "BeforeRendering" point causes a fatal crash when using DX12 when allocating a RT
+                defaultInjectionPoint = RenderPassEvent.BeforeRenderingShadows;
+            }
+            
             constantsSetup = new SetupConstants
             {
                 renderPassEvent = defaultInjectionPoint
@@ -140,19 +170,22 @@ namespace StylizedWater3
 
             #if DEBUG_AVAILABLE
             debugInspectorPass = new DebugInspectorPass();
-            debugInspectorPass.renderPassEvent = RenderPassEvent.AfterRenderingOpaques;
+            debugInspectorPass.renderPassEvent = RenderPassEvent.AfterRendering;
             #endif
         }
 
         //Note: Actually prefer to render before transparents, but this creates a recursive RenderSingleCamera call
         //Restoring the view/projection to that of the camera also breaks VR. Required functions are internal URP code
-        private readonly RenderPassEvent defaultInjectionPoint = RenderPassEvent.BeforeRendering;
+        
+        //In some cases, if no pre-passes render (depth, shadows, etc) then the projection does not get reset when rendering the opaque objects pass. Hence, things must render as early as possible.
+        private static RenderPassEvent defaultInjectionPoint = RenderPassEvent.BeforeRendering;
         
         //Dynamic Effects
         partial void CreateDynamicEffectsPasses();
         partial void AddDynamicEffectsPasses(ScriptableRenderer renderer, ref RenderingData renderingData);
         partial void DisposeDynamicEffectsPasses();
         
+        partial void VerifyUnderwaterRendering();
         partial void CreateUnderwaterRenderingPasses();
         partial void AddUnderwaterRenderingPasses(ScriptableRenderer renderer, ref RenderingData renderingData);
         partial void DisposeUnderwaterRenderingPasses();
@@ -161,18 +194,16 @@ namespace StylizedWater3
         partial void AddFlowMapPass(ScriptableRenderer renderer, ref RenderingData renderingData);
         partial void DisposeFlowMapPass();
 
-        private bool IsInvalidContext(ref RenderingData renderingData)
+        private bool IsInvalidContext(CameraType cameraType, CameraRenderType cameraRenderType)
         {
-            var currentCam = renderingData.cameraData.camera;
-
             //Skip for any special use camera's (except scene view camera)
-            if (currentCam.cameraType != CameraType.SceneView && (currentCam.cameraType == CameraType.Reflection || currentCam.cameraType == CameraType.Preview || currentCam.hideFlags != HideFlags.None))
+            if (cameraType != CameraType.SceneView && (cameraType == CameraType.Preview || hideFlags != HideFlags.None))
             {
                 return true;
             }
 
             //Skip overlay cameras
-            if (renderingData.cameraData.renderType == CameraRenderType.Overlay)
+            if (cameraRenderType == CameraRenderType.Overlay)
             {
                 return true;
             }
@@ -188,8 +219,10 @@ namespace StylizedWater3
 
         public override void AddRenderPasses(ScriptableRenderer renderer, ref RenderingData renderingData)
         {
-            if(IsInvalidContext(ref renderingData)) return;
+            var currentCam = renderingData.cameraData.camera;
             
+            if(IsInvalidContext(currentCam.cameraType, renderingData.cameraData.renderType)) return;
+     
             constantsSetup.Setup(this);
             renderer.EnqueuePass(constantsSetup);
 
@@ -205,34 +238,49 @@ namespace StylizedWater3
                 renderer.EnqueuePass(transparentTexturePass);
             }
             #endif
-            
-            AddFlowMapPass(renderer, ref renderingData);
-            AddDynamicEffectsPasses(renderer, ref renderingData);
-            
-            if (RequireHeightPrePass || heightPrePassSettings.enable || HeightQuerySystem.RequiresHeightPrepass)
-            {
-                heightPrePass.Setup(heightPrePassSettings);
-                renderer.EnqueuePass(heightPrePass);
 
-                if (HeightQuerySystem.QueryCount > 0)
+            //Do not execute for reflection probe captures
+            if (currentCam.cameraType != CameraType.Reflection)
+            {
+                AddFlowMapPass(renderer, ref renderingData);
+                AddDynamicEffectsPasses(renderer, ref renderingData);
+
+                //Do not execute for the scene-view camera in play-mode. Even if the tab is not active, it would render around it instead of the main camera
+                var skipHeightPrePass = Application.isPlaying && heightPrePassSettings.disableInSceneView && currentCam.cameraType == CameraType.SceneView;
+
+                //In play-mode, strictly execute for the main camera
+                skipHeightPrePass |= Application.isPlaying && !currentCam.CompareTag("MainCamera");
+                
+                if (WillExecuteHeightPrePass && skipHeightPrePass == false)
                 {
-                    heightQueryPass.Setup(heightReadbackCS);
-                    renderer.EnqueuePass(heightQueryPass);
+                    //Debug.Log($"Executing height pre-pass for {currentCam.name}");
+                    
+                    heightPrePass.Setup(heightPrePassSettings);
+                    renderer.EnqueuePass(heightPrePass);
+
+                    if (HeightQuerySystem.QueryCount > 0)
+                    {
+                        heightQueryPass.Setup(this, heightReadbackCS);
+                        renderer.EnqueuePass(heightQueryPass);
+                    }
+                }
+                else
+                {
+                    Shader.SetGlobalInt(HeightPrePass._WaterHeightPrePassAvailable, 0);
                 }
             }
-            else
-            {
-                Shader.SetGlobalInt(HeightPrePass._WaterHeightPrePassAvailable, 0);
-            }
-            
+
             AddUnderwaterRenderingPasses(renderer, ref renderingData);
             
             #if DEBUG_AVAILABLE
-            if (RenderTargetDebugger.InspectedProperty > 0) renderer.EnqueuePass(debugInspectorPass);
+            if (RenderTargetDebugger.InspectedProperty > 0)
+            {
+                renderer.EnqueuePass(debugInspectorPass);
+            }
             #endif
         }
 
-        private void OnDisable()
+        protected override void Dispose(bool disposing)
         {
             constantsSetup.Dispose();
             heightPrePass.Dispose();
@@ -263,7 +311,11 @@ namespace StylizedWater3
                     {
                         width = destinationDesc.width,
                         height = destinationDesc.height,
-                        graphicsFormat = destinationDesc.format,
+                        //If you're seeing an error here you are not using a compatible Unity version!
+                        graphicsFormat = destinationDesc.colorFormat,
+                        #if UNITY_6000_1_OR_NEWER
+                        colorFormat = RenderTextureFormat.Default,
+                        #endif
                         volumeDepth = 1,
                         dimension = destinationDesc.dimension,
                         useMipMap = destinationDesc.useMipMap,
@@ -271,16 +323,47 @@ namespace StylizedWater3
                     };
 
                     TextureDesc textureDesc = debugData.currentHandle.GetDescriptor(renderGraph);
-                    RenderingUtils.ReAllocateHandleIfNeeded(ref RenderTargetDebugger.CurrentRT, rtDsc, textureDesc.filterMode, textureDesc.wrapMode, textureDesc.anisoLevel, textureDesc.mipMapBias, textureDesc.name);
+                    var allocate = RenderTargetDebugger.CurrentRT == null || RenderTargetDebugger.CurrentRT.rt == null;
 
+                    if (allocate == false)
+                    {
+                        allocate |= RenderTargetDebugger.CurrentRT.rt.name != textureDesc.name;
+                        allocate |= RenderTargetDebugger.CurrentRT.rt.graphicsFormat != textureDesc.format;
+                        allocate |= RenderTargetDebugger.CurrentRT.rt.width != textureDesc.width;
+                        allocate |= RenderTargetDebugger.CurrentRT.rt.height != textureDesc.height;
+                    }
+
+                    if (allocate)
+                    {
+                        textureDesc.name += " (Debug)";
+                        //Debug.Log($"Reallocating debug RT ({textureDesc.name})");
+                        
+                        RenderTargetDebugger.CurrentRT?.Release();
+                        RenderTargetDebugger.CurrentRT = RTHandles.Alloc(rtDsc, name: textureDesc.name);
+                    }
+                    
+                    //Idiotic function keeps causing memory leaks since Unity 2021
+                    //RenderingUtils.ReAllocateHandleIfNeeded(ref RenderTargetDebugger.CurrentRT, rtDsc, textureDesc.filterMode, textureDesc.wrapMode, textureDesc.anisoLevel, textureDesc.mipMapBias, textureDesc.name);
+                    
                     TextureHandle destination = renderGraph.ImportTexture(RenderTargetDebugger.CurrentRT);
 
-                    //Copy TextureHandle into persistent RT
-                    renderGraph.AddCopyPass(debugData.currentHandle, destination, passName: "Water Debug");
+                    if (destination.IsValid() == false)
+                    {
+                        throw new Exception("Failed to generate debugger texture");
+                    }
+                    else
+                    {
+                        var cameraData = frameData.Get<UniversalCameraData>();
+                        RenderTargetDebugger.CurrentCameraName = cameraData.camera.name;
+                        
+                        //Copy TextureHandle into persistent RT
+                        renderGraph.AddCopyPass(debugData.currentHandle, destination, passName: "Water Debug");
+                    }
                 }
                 else
                 {
                     RenderTargetDebugger.CurrentRT = null;
+                    RenderTargetDebugger.CurrentCameraName = string.Empty;
                 }
             }
 
@@ -290,27 +373,7 @@ namespace StylizedWater3
 #pragma warning restore CS0672
 #pragma warning restore CS0618
         }
-        #endif
-
-        public static void VerifySetup(string requesterName = null)
-        {
-            #if UNITY_EDITOR && URP
-            if (Application.isPlaying == false)
-            {
-                if (PipelineUtilities.RenderFeatureAdded<StylizedWaterRenderFeature>() == false)
-                {
-                    string requesterString = requesterName != null ? $" by \"{requesterName}\" " : " ";
-                    
-                    if (UnityEditor.EditorUtility.DisplayDialog("Stylized Water 3", $"The Stylized Water 3 render feature hasn't been added to the default renderer" +
-                                                                                    $"\n\n" +
-                                                                                    $"This is required{requesterString}for certain rendering to take effect.", "Setup", "Ignore for now"))
-                    {
-                        PipelineUtilities.SetupRenderFeature<StylizedWaterRenderFeature>(name:"Stylized Water 3");
-                    }
-                }
-            }
-            #endif
-        }
+        #endif //DEBUG_AVAILABLE
     }
 }
 #endif

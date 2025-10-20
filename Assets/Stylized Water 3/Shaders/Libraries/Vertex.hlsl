@@ -96,7 +96,7 @@ Varyings LitPassVertex(Attributes input)
 		normalInput.bitangentWS = real3(0.0, 0.0, 1.0);
 	}
 	
-	float4 vertexColor = GetVertexColor(input.color.rgba, float4(_IntersectionSource > 0 ? 1 : 0, _VertexColorDepth, _VertexColorWaveFlattening, _VertexColorFoam));
+	float4 vertexColor = GetVertexColor(input.color.rgba, float4(_IntersectionSource > 0 ? 1 : 0, _FogSource > 1 ? 0 : 1, _VertexColorWaveFlattening, _VertexColorFoam));
 
 	#if !defined(SHADERPASS_HEIGHT) || (defined(SHADERPASS_HEIGHT) && defined(DISPLACEMENT_BUFFER_PER_VERTEX))//Displacement will be calculated per pixel
 #if _WAVES
@@ -124,7 +124,7 @@ Varyings LitPassVertex(Attributes input)
 	//SampleWaveSimulationVertex(positionWS, positionWS.y);
 
 	#if DYNAMIC_EFFECTS_ENABLED
-	if(_ReceiveDynamicEffects)
+	if(_ReceiveDynamicEffectsHeight)
 	{
 		float4 effectsData = SampleDynamicEffectsData(positionWS.xyz + offset.xyz);
 

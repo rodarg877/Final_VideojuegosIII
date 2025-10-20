@@ -15,6 +15,7 @@ using UnityEditor.PackageManager;
 using UnityEditor.PackageManager.Requests;
 using PackageInfo = UnityEditor.PackageManager.PackageInfo;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace StylizedWater3
 {
@@ -26,23 +27,19 @@ namespace StylizedWater3
         public const string ASSET_ID = "287769";
         public const string ASSET_ABRV = "SW3";
 
-        public const string INSTALLED_VERSION = "3.0.1";
+        public const string INSTALLED_VERSION = "3.2.2";
         
-        public const int SHADER_GENERATOR_VERSION_MAJOR = 3;
-        public const int SHADER_GENERATOR_MINOR = 0; 
-        public const int SHADER_GENERATOR_PATCH = 0;
-        
-        public const string MIN_UNITY_VERSION = "6000.0.15f1";
+        private static readonly Dictionary<string, int> REQUIRED_PATCH_VERSIONS = new Dictionary<string, int>()
+        {
+            { "6000.0", 22 },
+            { "6000.1", 3 }
+        };
         public const string MIN_URP_VERSION = "17.0.3";
 
         public const string DOC_URL = "https://staggart.xyz/unity/stylized-water-3/sw3-docs/";
         public const string FORUM_URL = "https://discussions.unity.com/t/1542753";
         public const string EMAIL_URL = "mailto:contact@staggart.xyz?subject=Stylized Water 3";
         public const string DISCORD_INVITE_URL = "https://discord.gg/GNjEaJc8gw";
-        
-        public static bool supportedVersion = true;
-        public static bool compatibleVersion = true;
-        public static bool alphaVersion = false;
 
 #if !URP //Enabled when com.unity.render-pipelines.universal is below MIN_URP_VERSION
         [InitializeOnLoad]
@@ -142,19 +139,15 @@ namespace StylizedWater3
             
             private static void OnPreProcessAsset(string m_assetPath)
             {
-                /*
                 //Importing/updating the Stylized Water 3 asset
-                if (assetPath.EndsWith("Stylized Water 3/Editor/AssetInfo.cs") || assetPath.EndsWith("com.staggartcreations.stylizedwater3/Editor/AssetInfo.cs"))
+                if (m_assetPath.EndsWith("Stylized Water 3/Editor/AssetInfo.cs") || m_assetPath.EndsWith("com.staggartcreations.stylizedwater3/Editor/AssetInfo.cs"))
                 {
-                    
+                    Installer.Initialize();
+                    Installer.OpenWindowIfNeeded();
                 }
-                */
                 
                 //These files change every version, so will trigger when updating or importing the first time
-                if (
-                    //Importing the Underwater Rendering extension
-                    m_assetPath.EndsWith("Extension.UnderwaterRendering.cs"))
-                    //Any further extensions...
+                if (m_assetPath.EndsWith("Extension.UnderwaterRendering.cs"))
                 {
                     OnImportExtension("Underwater Rendering");
                 }
@@ -221,6 +214,16 @@ namespace StylizedWater3
 
         public static class VersionChecking
         {
+            public static string MinRequiredUnityVersion = "undefined";
+
+            public enum UnityVersionType
+            {
+                Release,
+                Beta,
+                Alpha
+            }
+            public static UnityVersionType unityVersionType;
+            
             [InitializeOnLoadMethod]
             static void Initialize()
             {
@@ -252,17 +255,64 @@ namespace StylizedWater3
                 return version.Substring(0, version.LastIndexOf(" ("));
             }
             
+            public static bool supportedMajorVersion = true;
+            public static bool supportedPatchVersion = true;
+            public static bool compatibleVersion = true;
+            
+            private static void ParseUnityVersion(string versionString, out int major, out int minor, out int patch, out UnityVersionType type)
+            {
+                var match = System.Text.RegularExpressions.Regex.Match(versionString, @"^(\d+)\.(\d+)\.(\d+)");
+                if (match.Success)
+                {
+                    major = int.Parse(match.Groups[1].Value);
+                    minor = int.Parse(match.Groups[2].Value);
+                    patch = int.Parse(match.Groups[3].Value);
+                    
+                    if (versionString.Contains("b"))
+                    {
+                        type = UnityVersionType.Beta;
+                    }
+                    else if (versionString.Contains("a"))
+                    {
+                        type = UnityVersionType.Alpha;
+                    }
+                    else
+                    {
+                        type = UnityVersionType.Release;
+                    }
+                }
+                else
+                {
+                    throw new FormatException($"Invalid Unity version format: {versionString}.");
+                }
+            }
+            
             public static void CheckUnityVersion()
             {
+                string unityVersion = GetUnityVersion();
+                
                 #if !UNITY_6000_0_OR_NEWER
                 compatibleVersion = false;
                 #endif
                 
-                #if !UNITY_6000_0_OR_NEWER
-                supportedVersion = false;
+                #if !UNITY_6000_0_OR_NEWER || UNITY_7000_OR_NEWER
+                supportedMajorVersion = false;
                 #endif
+                
+                ParseUnityVersion(unityVersion, out int major, out int minor, out int patch, out unityVersionType);
 
-                alphaVersion = GetUnityVersion().Contains("f") == false;
+                //Get the minimum required patch version for the current Unity version (eg. 6000.1)
+                if (REQUIRED_PATCH_VERSIONS.TryGetValue($"{major}.{minor}", out int minPatchVersion))
+                {
+                    supportedPatchVersion = patch >= minPatchVersion;
+                }
+                else
+                {
+                    //None found, current Unity version likely unknown
+                    supportedPatchVersion = true;
+                }
+
+                MinRequiredUnityVersion = $"{major}.{minor}.{minPatchVersion}";
             }
 
             public static string apiResult;
@@ -300,6 +350,13 @@ namespace StylizedWater3
 
             public static void CheckForUpdate(bool showPopup = false)
             {
+                //Offline
+                if (Application.internetReachability == NetworkReachability.NotReachable)
+                {
+                    LATEST_VERSION = INSTALLED_VERSION;
+                    return;
+                }
+                
                 VersionChecking.showPopup = showPopup;
 
                 queryStatus = QueryStatus.Fetching;
@@ -328,9 +385,10 @@ namespace StylizedWater3
                     AssetStoreItem asset = (AssetStoreItem)JsonUtility.FromJson(result, typeof(AssetStoreItem));
 
                     LATEST_VERSION = asset.version;
+                    //LATEST_VERSION = "9.9.9";
                     
 #if SWS_DEV
-                    Debug.Log("<b>PackageVersionCheck</b> Update available = " + UPDATE_AVAILABLE + " (Installed:" + INSTALLED_VERSION + ") (Remote:" + LATEST_VERSION + ")");
+                    Debug.Log("<b>Asset store API</b> Update available = " + UPDATE_AVAILABLE + " (Installed:" + INSTALLED_VERSION + ") (Remote:" + LATEST_VERSION + ")");
 #endif
 
                     queryStatus = QueryStatus.Completed;

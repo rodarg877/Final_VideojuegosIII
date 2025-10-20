@@ -24,10 +24,10 @@ namespace StylizedWater3
         private SerializedProperty offset;
         private SerializedProperty includeSkybox;
         private SerializedProperty enableFog;
+        private SerializedProperty enableInSceneView;
         
         //Quality
         private SerializedProperty renderShadows;
-        private SerializedProperty renderRange;
         private SerializedProperty renderScale;
         private SerializedProperty maximumLODLevel;
         
@@ -57,8 +57,8 @@ namespace StylizedWater3
             offset = serializedObject.FindProperty("offset");
             includeSkybox = serializedObject.FindProperty("includeSkybox");
             enableFog = serializedObject.FindProperty("enableFog");
+            enableInSceneView = serializedObject.FindProperty("enableInSceneView");
             renderShadows = serializedObject.FindProperty("renderShadows");
-            renderRange = serializedObject.FindProperty("renderRange");
             renderScale = serializedObject.FindProperty("renderScale");
             maximumLODLevel = serializedObject.FindProperty("maximumLODLevel");
             waterObjects = serializedObject.FindProperty("waterObjects");
@@ -89,7 +89,7 @@ namespace StylizedWater3
         {
             if (!previewReflection) return;
 
-            if (PlanarReflectionRenderer.InvalidContext(camera)) return;
+            if (renderer.InvalidContext(camera)) return;
 
             currentCamera = camera;
             
@@ -111,6 +111,11 @@ namespace StylizedWater3
             UI.DrawNotification("The Universal Render Pipeline package v" + AssetInfo.MIN_URP_VERSION + " or newer is not installed", MessageType.Error);
 #else
             UI.DrawHeader();
+
+            if (ShaderUtil.anythingCompiling)
+            {
+                EditorGUILayout.HelpBox("Rendering is temporarily paused, while the editor finishes compiling shaders", MessageType.Info);
+            }
             
             using (new EditorGUILayout.HorizontalScope())
             {
@@ -160,6 +165,8 @@ namespace StylizedWater3
             
             EditorGUILayout.PropertyField(includeSkybox);
             EditorGUILayout.PropertyField(enableFog);
+			if(enableFog.boolValue) EditorGUILayout.HelpBox("Unity's built-in fog does not support oblique projections. Expect incorrect fog shading on tall objects or large triangles", MessageType.Warning);
+            EditorGUILayout.PropertyField(enableInSceneView);
             
             EditorGUILayout.Space();
 
@@ -175,7 +182,6 @@ namespace StylizedWater3
             {
                 renderer.ToggleShadows(renderShadows.boolValue);
             }
-            EditorGUILayout.PropertyField(renderRange);
             EditorGUILayout.PropertyField(renderScale);
             EditorGUILayout.PropertyField(maximumLODLevel);
             
