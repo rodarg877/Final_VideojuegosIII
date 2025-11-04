@@ -3,7 +3,12 @@ guid: 4d8ffbc514d05954fbeca6f6e14a707b
 ModelImporter:
   serializedVersion: 24200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Direwolf
+    second: {fileID: 2100000, guid: 6bb42d772f6aeff409d93dfba410c2f4, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0

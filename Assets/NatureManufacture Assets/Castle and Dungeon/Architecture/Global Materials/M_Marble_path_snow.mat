@@ -535,7 +535,7 @@ Material:
     - _Base2TriplanarThreshold: 5
     - _Base2UsePlanarUV: 0
     - _BaseAORemapMax: 1
-    - _BaseAORemapMin: 0.13
+    - _BaseAORemapMin: 0
     - _BaseEmissionMaskIntensivity: 6.435
     - _BaseEmissionMaskIntensivity_1: 2.99
     - _BaseEmissionMaskTreshold: 4.2
@@ -575,7 +575,7 @@ Material:
     - _CoverTessMapMin: -0.02
     - _CoverTessMapOffset: 0
     - _CoverTriplanarThreshold: 5
-    - _CoverUsePlanarUV: 0
+    - _CoverUsePlanarUV: 1
     - _Cover_Amount: 2
     - _Cover_Amount_Grow_Speed: 3
     - _Cover_Max_Angle: 90
@@ -892,7 +892,8 @@ Material:
     - _ZWrite: 1
     - _ZWriteControl: 0
     m_Colors:
-    - Color_9038becb6e614b229ea1aa0f2e0ea888: {r: 0.4012993, g: 0.40363804, b: 0.509434, a: 1}
+    - Color_9038becb6e614b229ea1aa0f2e0ea888: {r: 0.4012993, g: 0.40363804, b: 0.509434,
+        a: 1}
     - Vector4_606b2bd599b74c8eb765aa838d8005ef: {r: 3, g: 3, b: 0, a: 0}
     - _BASE_COLOR: {r: 0.5, g: 0.5, b: 0.5, a: 1}
     - _Base2Color: {r: 1, g: 1, b: 1, a: 0}
@@ -908,7 +909,7 @@ Material:
     - _BaseTilingOffset: {r: 2, g: 2, b: 0, a: 0}
     - _COAT_COLOR: {r: 0, g: 0, b: 0, a: 0}
     - _Color: {r: 0.6784314, g: 0.6784314, b: 0.6784314, a: 1}
-    - _CoverBaseColor: {r: 0.3035326, g: 0.3735848, b: 0.28688493, a: 0}
+    - _CoverBaseColor: {r: 1, g: 1, b: 1, a: 0}
     - _CoverDirection: {r: 0, g: 1, b: 0, a: 0}
     - _CoverLeaksColorMultiply: {r: 0, g: 0, b: 0, a: 0}
     - _CoverTilingOffset: {r: 6, g: 6, b: 0, a: 0}
