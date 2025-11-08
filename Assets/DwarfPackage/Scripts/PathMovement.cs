@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections;
 
-namespace DwarvenPackage
+namespace SkyrimProject.DwarvenPackage
 {
     public class PathMovement : MonoBehaviour
     {
