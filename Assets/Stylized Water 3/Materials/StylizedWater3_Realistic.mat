@@ -52,7 +52,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _BumpMap:
-        m_Texture: {fileID: 2800000, guid: d63a31f28f34eae4ebc27e00a9799433, type: 3}
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _BumpMapLarge:
@@ -76,7 +76,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _FoamTex:
-        m_Texture: {fileID: 2800000, guid: 743c4d2b8fe20124f9260175ab718f33, type: 3}
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _FoamTexDynamic:
@@ -84,7 +84,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _IntersectionNoise:
-        m_Texture: {fileID: 2800000, guid: f8c7522379eccbf46bb5473bd771e5cd, type: 3}
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
@@ -185,6 +185,7 @@ Material:
     - _FoamBubblesSpread: 1
     - _FoamBubblesStrength: 0.1
     - _FoamClipping: 0
+    - _FoamClippingDynamic: 0
     - _FoamDistanceOn: 0
     - _FoamDistortion: 0.1
     - _FoamOn: 1
@@ -239,6 +240,7 @@ Material:
     - _PlanarReflectionsParams: 0.99
     - _PointSpotLightReflectionDistortion: 0.5
     - _PointSpotLightReflectionExp: 64
+    - _PointSpotLightReflectionSharp: 0
     - _PointSpotLightReflectionSize: 0
     - _PointSpotLightReflectionStrength: 10
     - _QueueOffset: 0
@@ -284,6 +286,7 @@ Material:
     - _SrcBlend: 1
     - _SunReflectionDistortion: 0.76
     - _SunReflectionPerturbance: 0.386
+    - _SunReflectionSharp: 0
     - _SunReflectionSize: 0.895
     - _SunReflectionStrength: 5
     - _Surface: 0
@@ -300,6 +303,7 @@ Material:
     - _TranslucencyReflectionMask: 1
     - _TranslucencyStrength: 1
     - _TranslucencyStrengthDirect: 0.05
+    - _UnderwaterReflectionStrength: 0.5
     - _UnderwaterRefractionOffset: 0.2
     - _UnderwaterSurfaceSmoothness: 0.8
     - _VertexColorFoam: 0
