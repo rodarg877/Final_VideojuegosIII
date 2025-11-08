@@ -26,6 +26,7 @@ Material:
   m_ModifiedSerializedProperties: 2
   m_ValidKeywords:
   - _ALPHAPREMULTIPLY_ON
+  - _ALPHATEST_ON
   - _NORMALMAP
   - _SPECULAR_SETUP
   - _SURFACE_TYPE_TRANSPARENT
@@ -62,6 +63,11 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _AlphaClip: 1
+    - _Blend: 0
+    - _Cutoff: 0.479
+    - _DstBlend: 10
+    - _DstBlendAlpha: 10
     - _GlossMapScale: 0
     - _Glossiness: 0
     - _GlossyReflections: 0
