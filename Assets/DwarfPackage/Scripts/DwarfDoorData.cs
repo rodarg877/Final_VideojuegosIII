@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace DwarvenPackage
+namespace SkyrimProject.DwarvenPackage
 {
     public class DwarfDoorData : MonoBehaviour
     {
