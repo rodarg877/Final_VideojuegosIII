@@ -874,12 +874,13 @@ Material:
     - _ZWrite: 1
     - _ZWriteControl: 0
     m_Colors:
-    - Color_9038becb6e614b229ea1aa0f2e0ea888: {r: 0.4012993, g: 0.40363804, b: 0.509434, a: 1}
+    - Color_9038becb6e614b229ea1aa0f2e0ea888: {r: 0.4012993, g: 0.40363804, b: 0.509434,
+        a: 1}
     - Vector4_606b2bd599b74c8eb765aa838d8005ef: {r: 3, g: 3, b: 0, a: 0}
     - _BASE_COLOR: {r: 0.5, g: 0.5, b: 0.5, a: 1}
     - _Base2Color: {r: 1, g: 1, b: 1, a: 0}
     - _Base2TilingOffset: {r: 1, g: 1, b: 0, a: 0}
-    - _BaseColor: {r: 0.14566743, g: 0.15218912, b: 0.15471691, a: 1}
+    - _BaseColor: {r: 0.53773576, g: 0.53773576, b: 0.53773576, a: 1}
     - _BaseColor0: {r: 1, g: 1, b: 1, a: 1}
     - _BaseColor1: {r: 0.8679245, g: 0.8679245, b: 0.8679245, a: 1}
     - _BaseColor2: {r: 1, g: 1, b: 1, a: 1}
