@@ -18,6 +18,8 @@ namespace SkyrimProject.DwarvenPackage
         private int currentIndex = 0;
         private bool movingForward = true;
 
+        private bool canMove = true;
+
         private void Start()
         {
             if (waypoints.Length > 0)
@@ -26,7 +28,7 @@ namespace SkyrimProject.DwarvenPackage
 
         private void Update()
         {
-            if (waypoints.Length < 2) return;
+            if (waypoints.Length < 2 || !canMove) return;
 
             MoveAlongPath();
         }
@@ -68,6 +70,11 @@ namespace SkyrimProject.DwarvenPackage
                 else
                     movingForward = true; // Cambia dirección
             }
+        }
+
+        public void SetMovement(bool canMove) 
+        {
+            this.canMove = canMove;
         }
 
         private void OnDrawGizmos()
