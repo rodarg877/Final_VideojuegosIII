@@ -1,0 +1,16 @@
+{
+  "lines": [
+    {
+      "speakerName": "Guardia",
+      "text": "Detente, viajero. ¿Cuál es tu propósito en estas tierras?"
+    },
+    {
+      "speakerName": "Jugador",
+      "text": "Estoy en una misión importante"
+    },
+    {
+      "speakerName": "Guardia",
+      "text": "Entonces pasa, pero no causes problemas."
+    }
+  ]
+}
