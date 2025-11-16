@@ -143,7 +143,6 @@ Material:
     - _DistanceNormalsOn: 1
     - _DistanceNormalsTiling: 0.15
     - _DstBlend: 10
-    - _DstBlendAlpha: 10
     - _EdgeFade: 0.1
     - _Emission: 0
     - _EnableDirectionalCaustics: 0
@@ -228,7 +227,6 @@ Material:
     - _SpecularReflectionsOn: 1
     - _Speed: 1
     - _SrcBlend: 5
-    - _SrcBlendAlpha: 1
     - _SunReflectionDistortion: 0.49
     - _SunReflectionSize: 0.5
     - _SunReflectionStrength: 10
@@ -245,7 +243,6 @@ Material:
     - _VertexColorFoam: 0
     - _VertexColorTransparency: 0
     - _VertexColorWaveFlattening: 0
-    - _Vertex_Colors: 1
     - _WaveDistance: 0.8
     - _WaveDistortion: 0.5
     - _WaveFrequency: 1
@@ -277,7 +274,6 @@ Material:
     - _NormalTiling: {r: 0.5, g: 0.5, b: 0, a: 0}
     - _ShallowColor: {r: 0.1, g: 0.9, b: 0.89, a: 0.02}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
-    - _Tint: {r: 1, g: 1, b: 1, a: 1}
     - _WaveDirection: {r: 1, g: 1, b: 1, a: 1}
     - _WaveFadeDistance: {r: 150, g: 500, b: 0, a: 0}
   m_BuildTextureStacks: []

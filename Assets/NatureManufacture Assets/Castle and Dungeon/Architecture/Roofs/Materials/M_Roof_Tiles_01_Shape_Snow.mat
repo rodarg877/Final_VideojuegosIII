@@ -739,7 +739,7 @@ Material:
     - _PPDPrimitiveLength: 1
     - _PPDPrimitiveWidth: 1
     - _Parallax: 0.02
-    - _QueueControl: 1
+    - _QueueControl: 0
     - _QueueOffset: 0
     - _REFLECTIONS_IOR: 1.52
     - _REFLECTIONS_ROUGHNESS: 0
@@ -839,7 +839,7 @@ Material:
     - _TransparentWritingMotionVec: 0
     - _TransparentZWrite: 0
     - _USECoverHeightT: 1
-    - _USEDYNAMICCOVERTSTATICMASKF: 1
+    - _USEDYNAMICCOVERTSTATICMASKF: 0
     - _UV0_UV2: 1
     - _UVBase: 0
     - _UVBase0: 2
@@ -874,8 +874,7 @@ Material:
     - _ZWrite: 1
     - _ZWriteControl: 0
     m_Colors:
-    - Color_9038becb6e614b229ea1aa0f2e0ea888: {r: 0.4012993, g: 0.40363804, b: 0.509434,
-        a: 1}
+    - Color_9038becb6e614b229ea1aa0f2e0ea888: {r: 0.4012993, g: 0.40363804, b: 0.509434, a: 1}
     - Vector4_606b2bd599b74c8eb765aa838d8005ef: {r: 3, g: 3, b: 0, a: 0}
     - _BASE_COLOR: {r: 0.5, g: 0.5, b: 0.5, a: 1}
     - _Base2Color: {r: 1, g: 1, b: 1, a: 0}

@@ -13,5 +13,5 @@ AssetOrigin:
   productId: 213197
   packageName: Unity Terrain - URP Demo Scene
   packageVersion: 1.0.3
-  assetPath: Assets/TerrainSampleAssets/ShaderGraphs/SubGraphs/SphereAO.shadersubgraph
+  assetPath: Assets/TerrainSampleAssets/ShaderGraphs/Subgraphs/SphereAO.shadersubgraph
   uploadId: 727820

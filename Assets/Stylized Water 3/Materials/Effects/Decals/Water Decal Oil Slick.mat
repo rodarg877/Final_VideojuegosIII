@@ -78,7 +78,6 @@ Material:
     - _CastShadows: 0
     - _Cull: 2
     - _DstBlend: 10
-    - _DstBlendAlpha: 10
     - _Metalicness: 1
     - _Offset: 0.45
     - _QueueControl: 0
@@ -86,7 +85,6 @@ Material:
     - _ReceiveShadows: 1
     - _Smoothness: 0.906
     - _SrcBlend: 5
-    - _SrcBlendAlpha: 1
     - _Surface: 1
     - _Use_Vertex_Color_Alpha: 0
     - _WorkflowMode: 0
