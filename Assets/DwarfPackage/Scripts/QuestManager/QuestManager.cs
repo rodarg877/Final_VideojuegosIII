@@ -33,11 +33,6 @@ namespace SkyrimProject.QuestSystem
 
         private void Update()
         {
-            if (Input.GetKeyDown(KeyCode.Q)) 
-            {
-                AcceptQuest("q_press_key_01");
-            }
-
             for (int i = 0; i < acceptedQuests.Count; i++)
             {
                 var quest = acceptedQuests[i];

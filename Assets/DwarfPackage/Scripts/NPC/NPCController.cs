@@ -1,6 +1,8 @@
 using UnityEngine;
 using System;
 using SkyrimProject.DialogueSystem;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace SkyrimProject.DwarvenPackage
 {
@@ -13,6 +15,10 @@ namespace SkyrimProject.DwarvenPackage
         [Header("Animation")]
         [SerializeField] private Animator animController;
 
+        [Header("DialogueActivable")]
+        [SerializeField] private List<DialogueActivable> dialogueActivables;
+
+
         private PathMovement pathMovement;
         private DialogueSystem.DialogueSystem dialogueSystem;
 
@@ -22,24 +28,44 @@ namespace SkyrimProject.DwarvenPackage
         {
             dialogueSystem = FindFirstObjectByType<DialogueSystem.DialogueSystem>();
             pathMovement = GetComponent<PathMovement>();
-            animController.SetBool("InMovement", true);
+            SetMovement(true);
         }
 
-        public void StartToDialogue() 
+        private void StartToDialogue() 
         {
-            pathMovement.SetMovement(false);
-            animController.SetBool("InMovement", false);
+            SetMovement(true);
             dialogueSystem.dialogueCompleted += EndDialogue;
             dialogueSystem.StartDialogue(dialogue, gameObject.transform);
         }
 
-        public void EndDialogue() 
+        private void EndDialogue() 
         {
+            DialogueActivable();
             interactionCompleted?.Invoke();
             interactionCompleted = null;
             dialogueSystem.dialogueCompleted -= EndDialogue;
-            pathMovement.SetMovement(true);
-            animController.SetBool("InMovement", true);
+
+            SetMovement(false);
+        }
+
+        private void SetMovement(bool movement) 
+        {
+            if (pathMovement != null)
+            {
+                pathMovement.SetMovement(movement);
+                animController.SetBool("InMovement", movement);
+            }
+        }
+
+        private void DialogueActivable() 
+        {
+            if (dialogueActivables.Count() > 0) 
+            {
+                foreach (var da in dialogueActivables) 
+                {
+                    da.Activate();
+                }
+            }
         }
 
         public void OnInteraction()

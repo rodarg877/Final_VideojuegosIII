@@ -1,7 +1,17 @@
 fileFormatVersion: 2
 guid: 082e38c445dfa8e478782764d326a75e
 SpeedTreeImporter:
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Oak_Bark_1
+    second: {fileID: 2100000, guid: befb83f469819f04aafb4a00ab6319cb, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Tree_Snow
+    second: {fileID: 2100000, guid: 79cad36714276fb40b8848192427ebf5, type: 2}
   serializedVersion: 7
   mainColor: {r: 1, g: 1, b: 1, a: 1}
   hueVariation: {r: 1, g: 0.5, b: 0, a: 0.1}

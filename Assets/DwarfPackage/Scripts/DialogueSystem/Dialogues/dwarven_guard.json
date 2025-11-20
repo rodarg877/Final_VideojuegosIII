@@ -1,0 +1,24 @@
+{
+  "lines": [
+    {
+      "speakerName": "Guardia Enano",
+      "text": "¡Detente, humano! No puedes entrar a las tierras de Dol'Hador."
+    },
+    {
+      "speakerName": "Mensajero",
+      "text": "¡Es importante! Soy mensajero de las tierras humanas y tengo un mensaje para el rey enano."
+    },
+    {
+      "speakerName": "Guardia Enano",
+      "text": "Con la guerra en contra de los orcos, no podemos dejar entrar a nadie."
+    },
+    {
+      "speakerName": "Mensajero",
+      "text": "¿Qué puedo hacer para que me dejen entrar?"
+    },
+    {
+      "speakerName": "Guardia Enano",
+      "text": "Habla con Atlas, el tiene un permiso especial, debe estar en la tienda de campaña."
+    }
+  ]
+}
