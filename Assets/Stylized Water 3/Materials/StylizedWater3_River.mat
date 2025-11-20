@@ -34,7 +34,6 @@ Material:
   - _RECEIVEDYNAMICEFFECTS_ON
   - _SMOOTH_INTERSECTION
   - _SURFACE_FOAM
-  - _VERTEXCOLORTRANSPARENCY_ON
   - _VERTEXCOLORWAVEFLATTENING_ON
   - _WORLDSPACEUV_ON
   - _ZCLIP_ON
@@ -136,7 +135,7 @@ Material:
     - _CausticsSpeed: 0.1
     - _CausticsTiling: 0.1
     - _ColorAbsorption: 0
-    - _Cull: 0
+    - _Cull: 2
     - _Cutoff: 0.5
     - _Depth: 2.07
     - _DepthExp: 1
