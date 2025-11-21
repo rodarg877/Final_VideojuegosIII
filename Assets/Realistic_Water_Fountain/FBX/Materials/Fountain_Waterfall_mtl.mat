@@ -43,7 +43,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _BumpMap:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 2800000, guid: e649ee2f0548f4d4e89ea0d1fdf809b4, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _BumpMapLarge:
@@ -279,7 +279,7 @@ Material:
     - _SlopeStretch: 0.5
     - _SlopeStretching: 0.5
     - _SlopeThreshold: 0.25
-    - _Smoothness: 0.449
+    - _Smoothness: 1
     - _SmoothnessTextureChannel: 0
     - _SparkleIntensity: 0
     - _SparkleSize: 0.28
