@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Wood
   - Stone
+  - Water
   layers:
   - Default
   - TransparentFX
