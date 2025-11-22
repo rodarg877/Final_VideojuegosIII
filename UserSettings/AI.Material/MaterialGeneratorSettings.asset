@@ -18,13 +18,13 @@ MonoBehaviour:
         serializedData:
         - key: 0
           value:
-            rid: 221290405362925568
+            rid: 221290419971424256
         - key: 1
           value:
-            rid: 221290405362925569
+            rid: 221290419971424257
         - key: 2
           value:
-            rid: 221290405362925570
+            rid: 221290419971424258
       lastMaterialMappings:
         serializedData:
         - key: NatureManufacture/URP/Lit/Top Cover Shape
@@ -177,15 +177,15 @@ MonoBehaviour:
           value: None
         - key: 11
           value: None
-    - rid: 221290405362925568
+    - rid: 221290419971424256
       type: {class: ModelSelection, ns: Unity.AI.Material.Services.Stores.States, asm: Unity.AI.Material}
       data:
         modelID: 44ec3749-963a-44b1-aa54-dc19f6ed8ab2
-    - rid: 221290405362925569
+    - rid: 221290419971424257
       type: {class: ModelSelection, ns: Unity.AI.Material.Services.Stores.States, asm: Unity.AI.Material}
       data:
         modelID: 
-    - rid: 221290405362925570
+    - rid: 221290419971424258
       type: {class: ModelSelection, ns: Unity.AI.Material.Services.Stores.States, asm: Unity.AI.Material}
       data:
         modelID: 

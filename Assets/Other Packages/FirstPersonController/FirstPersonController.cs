@@ -99,7 +99,7 @@ public class FirstPersonController : MonoBehaviour
     public float jumpPower = 5f;
 
     // Internal Variables
-    private bool isGrounded = false;
+    public bool isGrounded = false;
 
     #endregion
 
@@ -128,6 +128,8 @@ public class FirstPersonController : MonoBehaviour
     // Internal Variables
     private Vector3 jointOriginalPos;
     private float timer = 0;
+
+    private bool haPisadoEnEsteCiclo = false; 
 
     #endregion
 
@@ -497,34 +499,96 @@ public class FirstPersonController : MonoBehaviour
         }
     }
 
-    private void HeadBob()
+    // private void HeadBob()
+    // {
+    //     if(isWalking)
+    //     {
+    //         // Calculates HeadBob speed during sprint
+    //         if(isSprinting)
+    //         {
+    //             timer += Time.deltaTime * (bobSpeed + sprintSpeed);
+    //         }
+    //         // Calculates HeadBob speed during crouched movement
+    //         else if (isCrouched)
+    //         {
+    //             timer += Time.deltaTime * (bobSpeed * speedReduction);
+    //         }
+    //         // Calculates HeadBob speed during walking
+    //         else
+    //         {
+    //             timer += Time.deltaTime * bobSpeed;
+    //         }
+    //         // Applies HeadBob movement
+    //         joint.localPosition = new Vector3(jointOriginalPos.x + Mathf.Sin(timer) * bobAmount.x, jointOriginalPos.y + Mathf.Sin(timer) * bobAmount.y, jointOriginalPos.z + Mathf.Sin(timer) * bobAmount.z);
+    //     }
+    //     else
+    //     {
+    //         // Resets when play stops moving
+    //         timer = 0;
+    //         joint.localPosition = new Vector3(Mathf.Lerp(joint.localPosition.x, jointOriginalPos.x, Time.deltaTime * bobSpeed), Mathf.Lerp(joint.localPosition.y, jointOriginalPos.y, Time.deltaTime * bobSpeed), Mathf.Lerp(joint.localPosition.z, jointOriginalPos.z, Time.deltaTime * bobSpeed));
+    //     }
+    // }
+    
+// Luego busca la función HeadBob abajo y cámbiala por esta:
+private void HeadBob()
+{
+    if(isWalking)
     {
-        if(isWalking)
+        // Calculamos la velocidad del bob
+        if(isSprinting)
         {
-            // Calculates HeadBob speed during sprint
-            if(isSprinting)
-            {
-                timer += Time.deltaTime * (bobSpeed + sprintSpeed);
-            }
-            // Calculates HeadBob speed during crouched movement
-            else if (isCrouched)
-            {
-                timer += Time.deltaTime * (bobSpeed * speedReduction);
-            }
-            // Calculates HeadBob speed during walking
-            else
-            {
-                timer += Time.deltaTime * bobSpeed;
-            }
-            // Applies HeadBob movement
-            joint.localPosition = new Vector3(jointOriginalPos.x + Mathf.Sin(timer) * bobAmount.x, jointOriginalPos.y + Mathf.Sin(timer) * bobAmount.y, jointOriginalPos.z + Mathf.Sin(timer) * bobAmount.z);
+            timer += Time.deltaTime * (bobSpeed + sprintSpeed);
+        }
+        else if (isCrouched)
+        {
+            timer += Time.deltaTime * (bobSpeed * speedReduction);
         }
         else
         {
-            // Resets when play stops moving
-            timer = 0;
-            joint.localPosition = new Vector3(Mathf.Lerp(joint.localPosition.x, jointOriginalPos.x, Time.deltaTime * bobSpeed), Mathf.Lerp(joint.localPosition.y, jointOriginalPos.y, Time.deltaTime * bobSpeed), Mathf.Lerp(joint.localPosition.z, jointOriginalPos.z, Time.deltaTime * bobSpeed));
+            timer += Time.deltaTime * bobSpeed;
         }
+
+        // Calculamos la posición de la onda (El valor va de -1 a 1)
+        float waveY = Mathf.Sin(timer);
+        
+        // --- LÓGICA NUEVA PARA PASOS ---
+        // Si la onda está abajo del todo (el pie tocó el suelo) y no hemos sonado todavía...
+        if (waveY < -0.95f && !haPisadoEnEsteCiclo) 
+        {
+            haPisadoEnEsteCiclo = true; // Marcamos para que no suene 20 veces en el mismo paso
+            
+            // Llamamos al sistema de audio (buscamos el script en el mismo objeto)
+            FootstepSystem footsteps = GetComponent<FootstepSystem>();
+            if (footsteps != null)
+            {
+                footsteps.PlayFootstep(); // ¡DISPARO EXACTO!
+            }
+        }
+        
+        // Reseteamos la marca cuando la cabeza vuelve a subir
+        if (waveY > 0)
+        {
+            haPisadoEnEsteCiclo = false;
+        }
+        // -------------------------------
+
+        // Aplica el movimiento a la cámara (Tu código original)
+        joint.localPosition = new Vector3(
+            jointOriginalPos.x + Mathf.Sin(timer) * bobAmount.x, 
+            jointOriginalPos.y + Mathf.Sin(timer) * bobAmount.y, 
+            jointOriginalPos.z + Mathf.Sin(timer) * bobAmount.z
+        );
+    }
+    else
+    {
+        // Resets when play stops moving
+        timer = 0;
+        joint.localPosition = new Vector3(
+            Mathf.Lerp(joint.localPosition.x, jointOriginalPos.x, Time.deltaTime * bobSpeed), 
+            Mathf.Lerp(joint.localPosition.y, jointOriginalPos.y, Time.deltaTime * bobSpeed), 
+            Mathf.Lerp(joint.localPosition.z, jointOriginalPos.z, Time.deltaTime * bobSpeed)
+        );
+    }
     }
 }
 
