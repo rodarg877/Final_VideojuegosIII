@@ -19,7 +19,7 @@ MonoBehaviour:
     width: 1522
     height: 996
   m_ShowMode: 4
-  m_Title: Hierarchy
+  m_Title: Scene
   m_RootView: {fileID: 6}
   m_MinSize: {x: 875, y: 300}
   m_MaxSize: {x: 10000, y: 10000}
@@ -69,8 +69,8 @@ MonoBehaviour:
     y: 0
     width: 533
     height: 940
-  m_MinSize: {x: 276, y: 76}
-  m_MaxSize: {x: 4001, y: 4026}
+  m_MinSize: {x: 275, y: 50}
+  m_MaxSize: {x: 4000, y: 4000}
   m_ActualView: {fileID: 18}
   m_Panes:
   - {fileID: 18}
@@ -97,8 +97,8 @@ MonoBehaviour:
     y: 0
     width: 245
     height: 564
-  m_MinSize: {x: 201, y: 226}
-  m_MaxSize: {x: 4001, y: 4026}
+  m_MinSize: {x: 200, y: 200}
+  m_MaxSize: {x: 4000, y: 4000}
   m_ActualView: {fileID: 19}
   m_Panes:
   - {fileID: 19}
@@ -3159,7 +3159,7 @@ MonoBehaviour:
     m_ContainerData: []
     m_OverlaysVisible: 1
   m_SearchFilter:
-    m_NameFilter: 
+    m_NameFilter: antor
     m_ClassNames: []
     m_AssetLabels: []
     m_AssetBundleNames: []
@@ -3167,28 +3167,28 @@ MonoBehaviour:
     m_SceneHandles: 
     m_ShowAllHits: 0
     m_SkipHidden: 0
-    m_SearchArea: 1
+    m_SearchArea: 0
     m_Folders:
-    - Assets/Audio
+    - Assets/3DForge/Fantasy_Interiors/Villages_&_Towns/Prefabs/Props/Fireplaces
     m_Globs: []
     m_ProductIds: 
     m_AnyWithAssetOrigin: 0
-    m_OriginalText: 
+    m_OriginalText: antor
     m_ImportLogFlags: 0
     m_FilterByTypeIntersection: 0
   m_ViewMode: 1
   m_StartGridSize: 64
   m_LastFolders:
-  - Assets/Audio
+  - Assets/3DForge/Fantasy_Interiors/Villages_&_Towns/Prefabs/Props/Fireplaces
   m_LastFoldersGridSize: -1
   m_LastProjectPath: C:\Users\acond\Desktop\Final_VideojuegosIII
   m_LockTracker:
     m_IsLocked: 0
   m_FolderTreeState:
-    scrollPos: {x: 0, y: 79}
-    m_SelectedIDs: 10530700
-    m_LastClickedID: 480016
-    m_ExpandedIDs: 000000000e4b0700724d0700c84d0700ca4d070000ca9a3b
+    scrollPos: {x: 0, y: 550}
+    m_SelectedIDs: 9ca10800
+    m_LastClickedID: 565660
+    m_ExpandedIDs: 00000000784b0700744d07007e4d0700b8fe07005e090800aa8b080014a3080016a3080018a3080054a308007ea3080000ca9a3b
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -3217,7 +3217,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: 
     m_LastClickedID: 0
-    m_ExpandedIDs: 000000000e4b0700
+    m_ExpandedIDs: 00000000784b0700
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -3249,18 +3249,18 @@ MonoBehaviour:
     m_ExpandedInstanceIDs: c62300005c4207004830090086570800
     m_RenameOverlay:
       m_UserAcceptedRename: 0
-      m_Name: 
-      m_OriginalName: 
+      m_Name: _Recovery
+      m_OriginalName: _Recovery
       m_EditFieldRect:
         serializedVersion: 2
         x: 0
         y: 0
         width: 0
         height: 0
-      m_UserData: 0
+      m_UserData: 478582
       m_IsWaitingForDelay: 0
       m_IsRenaming: 0
-      m_OriginalEventType: 11
+      m_OriginalEventType: 0
       m_IsRenamingFilename: 1
       m_TrimLeadingAndTrailingWhitespace: 0
       m_ClientGUIView: {fileID: 5}
@@ -3362,24 +3362,24 @@ MonoBehaviour:
     m_OverlaysVisible: 1
   m_SceneHierarchy:
     m_TreeViewState:
-      scrollPos: {x: 0, y: 0}
-      m_SelectedIDs: 2af8ffff
-      m_LastClickedID: -2006
-      m_ExpandedIDs: c8faffff96100100
+      scrollPos: {x: 0, y: 1739}
+      m_SelectedIDs: 34e7ffff
+      m_LastClickedID: -6348
+      m_ExpandedIDs: 66cffcffacd1fcffded9fcff32dafcff48defcffc4e4fcff9ae4ffffd0e5ffff04e7ffff34e7ffff86edffffb8eeffff9cf8ffffa0f8ffffb2f8ffffb6f8ffffc8faffffd00e01009a1001006211010032120100
       m_RenameOverlay:
         m_UserAcceptedRename: 0
-        m_Name: 
-        m_OriginalName: 
+        m_Name: Campfire_1A2(Lit) (1)
+        m_OriginalName: Campfire_1A2(Lit) (1)
         m_EditFieldRect:
           serializedVersion: 2
           x: 0
           y: 0
           width: 0
           height: 0
-        m_UserData: 0
+        m_UserData: -6348
         m_IsWaitingForDelay: 0
         m_IsRenaming: 0
-        m_OriginalEventType: 11
+        m_OriginalEventType: 0
         m_IsRenamingFilename: 0
         m_TrimLeadingAndTrailingWhitespace: 0
         m_ClientGUIView: {fileID: 4}
@@ -3997,9 +3997,9 @@ MonoBehaviour:
   m_AudioPlay: 0
   m_DebugDrawModesUseInteractiveLightBakingData: 0
   m_Position:
-    m_Target: {x: 373.64706, y: 3.3843596, z: 224.16533}
+    m_Target: {x: 379.41122, y: -1.1082709, z: 204.60022}
     speed: 2
-    m_Value: {x: 373.64706, y: 3.3843596, z: 224.16533}
+    m_Value: {x: 379.41122, y: -1.1082709, z: 204.60022}
   m_RenderMode: 0
   m_CameraMode:
     drawMode: 0
@@ -4045,13 +4045,13 @@ MonoBehaviour:
     m_GridAxis: 1
     m_gridOpacity: 0.5
   m_Rotation:
-    m_Target: {x: 0.32680738, y: -0.4815729, z: 0.19964783, w: 0.7883177}
+    m_Target: {x: 0.51888186, y: -0.28057835, z: 0.1852436, w: 0.7859728}
     speed: 2
-    m_Value: {x: 0.3268042, y: -0.4815682, z: 0.19964588, w: 0.78831}
+    m_Value: {x: 0.53627443, y: -0.26317316, z: 0.1806379, w: 0.7813576}
   m_Size:
-    m_Target: 18.186533
+    m_Target: 7.163289
     speed: 2
-    m_Value: 18.186533
+    m_Value: 7.163289
   m_Ortho:
     m_Target: 0
     speed: 2
