@@ -1511,7 +1511,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3401364797927498519, guid: 1b4e37c78ebe8404ba7a7733f4c9d0b6, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 139.37459
+      value: 137.2
       objectReference: {fileID: 0}
     - target: {fileID: 3401364797927498519, guid: 1b4e37c78ebe8404ba7a7733f4c9d0b6, type: 3}
       propertyPath: m_LocalPosition.y
@@ -1519,7 +1519,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3401364797927498519, guid: 1b4e37c78ebe8404ba7a7733f4c9d0b6, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -95.241356
+      value: -105.4
       objectReference: {fileID: 0}
     - target: {fileID: 3401364797927498519, guid: 1b4e37c78ebe8404ba7a7733f4c9d0b6, type: 3}
       propertyPath: m_LocalRotation.w
@@ -7648,7 +7648,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3401364797927498519, guid: 1b4e37c78ebe8404ba7a7733f4c9d0b6, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 115.32471
+      value: 107.59
       objectReference: {fileID: 0}
     - target: {fileID: 3401364797927498519, guid: 1b4e37c78ebe8404ba7a7733f4c9d0b6, type: 3}
       propertyPath: m_LocalPosition.y
@@ -7656,7 +7656,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3401364797927498519, guid: 1b4e37c78ebe8404ba7a7733f4c9d0b6, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -75.76409
+      value: -84.57
       objectReference: {fileID: 0}
     - target: {fileID: 3401364797927498519, guid: 1b4e37c78ebe8404ba7a7733f4c9d0b6, type: 3}
       propertyPath: m_LocalRotation.w
@@ -11201,6 +11201,10 @@ PrefabInstance:
     - target: {fileID: 8199031428091885887, guid: 1901ff3116ee3cd439bfb44b4055defe, type: 3}
       propertyPath: m_Name
       value: Rounded_Platform_1A3
+      objectReference: {fileID: 0}
+    - target: {fileID: 8199031428091885887, guid: 1901ff3116ee3cd439bfb44b4055defe, type: 3}
+      propertyPath: m_TagString
+      value: Wood
       objectReference: {fileID: 0}
     - target: {fileID: 8199031428091885887, guid: 1901ff3116ee3cd439bfb44b4055defe, type: 3}
       propertyPath: m_StaticEditorFlags

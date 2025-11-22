@@ -160,7 +160,7 @@ Light:
   serializedVersion: 11
   m_Type: 2
   m_Color: {r: 0.740566, g: 0.95134634, b: 1, a: 1}
-  m_Intensity: 5
+  m_Intensity: 13
   m_Range: 20
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -202,7 +202,7 @@ Light:
   m_Lightmapping: 1
   m_LightShadowCasterMode: 0
   m_AreaSize: {x: 1, y: 1}
-  m_BounceIntensity: 0
+  m_BounceIntensity: 2
   m_ColorTemperature: 6570
   m_UseColorTemperature: 0
   m_BoundingSphereOverride: {x: 0, y: 0, z: 0, w: 0}

@@ -14,19 +14,19 @@ OcclusionCullingSettings:
 RenderSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 10
-  m_Fog: 0
+  m_Fog: 1
   m_FogColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   m_FogMode: 3
-  m_FogDensity: 0.01
+  m_FogDensity: 0.02
   m_LinearFogStart: 0
   m_LinearFogEnd: 300
   m_AmbientSkyColor: {r: 0.212, g: 0.227, b: 0.259, a: 1}
   m_AmbientEquatorColor: {r: 0.114, g: 0.125, b: 0.133, a: 1}
   m_AmbientGroundColor: {r: 0.047, g: 0.043, b: 0.035, a: 1}
-  m_AmbientIntensity: 1
+  m_AmbientIntensity: 0.45
   m_AmbientMode: 0
   m_SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
-  m_SkyboxMaterial: {fileID: 10304, guid: 0000000000000000f000000000000000, type: 0}
+  m_SkyboxMaterial: {fileID: 2100000, guid: 13b5d638036958140814980ea3acc9ab, type: 2}
   m_HaloStrength: 0.5
   m_FlareStrength: 1
   m_FlareFadeSpeed: 3
@@ -557,7 +557,7 @@ TerrainCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_TerrainData: {fileID: 15600000, guid: 2ce2592b7524f3f4c9e26b2b38700b97, type: 2}
-  m_EnableTreeColliders: 1
+  m_EnableTreeColliders: 0
 --- !u!218 &792201989
 Terrain:
   m_ObjectHideFlags: 0
@@ -926,7 +926,7 @@ TerrainCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_TerrainData: {fileID: 15600000, guid: eeb0c4abb707e3047ba40448de7e6e85, type: 2}
-  m_EnableTreeColliders: 1
+  m_EnableTreeColliders: 0
 --- !u!218 &1179130783
 Terrain:
   m_ObjectHideFlags: 0
@@ -1180,7 +1180,7 @@ TerrainCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_TerrainData: {fileID: 15600000, guid: d54e57f0c39a25d47b761f75b2fac1e2, type: 2}
-  m_EnableTreeColliders: 1
+  m_EnableTreeColliders: 0
 --- !u!218 &1317464601
 Terrain:
   m_ObjectHideFlags: 0
@@ -1510,7 +1510,7 @@ TerrainCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_TerrainData: {fileID: 15600000, guid: c61a29b48bd7d9b41976486d5c9b4f8e, type: 2}
-  m_EnableTreeColliders: 1
+  m_EnableTreeColliders: 0
 --- !u!218 &1557100717
 Terrain:
   m_ObjectHideFlags: 0
@@ -1665,7 +1665,7 @@ TerrainCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_TerrainData: {fileID: 15600000, guid: d3313d77cea360e4686fa5443492eba5, type: 2}
-  m_EnableTreeColliders: 1
+  m_EnableTreeColliders: 0
 --- !u!218 &1668403206
 Terrain:
   m_ObjectHideFlags: 0
@@ -1820,7 +1820,7 @@ TerrainCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_TerrainData: {fileID: 15600000, guid: 71e0e0bfe65e9974a8f961ff4f063aec, type: 2}
-  m_EnableTreeColliders: 1
+  m_EnableTreeColliders: 0
 --- !u!218 &1811778821
 Terrain:
   m_ObjectHideFlags: 0
@@ -1913,7 +1913,7 @@ TerrainCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_TerrainData: {fileID: 15600000, guid: 95fbb6cb403948549a1b6728a64064be, type: 2}
-  m_EnableTreeColliders: 1
+  m_EnableTreeColliders: 0
 --- !u!218 &1938673142
 Terrain:
   m_ObjectHideFlags: 0
@@ -2052,6 +2052,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1456398245939992877, guid: 31a57ec33d84b9d43ba8b2e488e4e041, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 6b33ffdbfd7b8174ebe2d3aacb671552, type: 2}
     - target: {fileID: 9127847650678669743, guid: 31a57ec33d84b9d43ba8b2e488e4e041, type: 3}
       propertyPath: m_Name
       value: OrcCity
@@ -2072,10 +2076,6 @@ PrefabInstance:
     - target: {fileID: 4487672931419789009, guid: f2e1fc48089e29648ac58a9e057e2bdb, type: 3}
       propertyPath: m_Name
       value: ZonaMinera
-      objectReference: {fileID: 0}
-    - target: {fileID: 4487672931419789009, guid: f2e1fc48089e29648ac58a9e057e2bdb, type: 3}
-      propertyPath: m_IsActive
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 9029617286960974628, guid: f2e1fc48089e29648ac58a9e057e2bdb, type: 3}
       propertyPath: m_LocalPosition.x
@@ -2130,14 +2130,22 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 697018999584394272, guid: be708dc3c29e0134192eb11f0bfbee07, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: e49bb378b39a3e8488666e25804d6c32, type: 2}
+    - target: {fileID: 1518010967536288819, guid: be708dc3c29e0134192eb11f0bfbee07, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: e49bb378b39a3e8488666e25804d6c32, type: 2}
     - target: {fileID: 2864813817724451717, guid: be708dc3c29e0134192eb11f0bfbee07, type: 3}
       propertyPath: m_Name
       value: Pantano
       objectReference: {fileID: 0}
-    - target: {fileID: 2864813817724451717, guid: be708dc3c29e0134192eb11f0bfbee07, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
+    - target: {fileID: 6041108920786798522, guid: be708dc3c29e0134192eb11f0bfbee07, type: 3}
+      propertyPath: material
+      value: 
+      objectReference: {fileID: 2100000, guid: e49bb378b39a3e8488666e25804d6c32, type: 2}
     - target: {fileID: 8484140416585373385, guid: be708dc3c29e0134192eb11f0bfbee07, type: 3}
       propertyPath: m_LocalPosition.x
       value: 594.82263
