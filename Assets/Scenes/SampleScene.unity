@@ -2921,6 +2921,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Human-ambience-trigger
       objectReference: {fileID: 0}
+    - target: {fileID: 5923874694782143026, guid: 5b92c1670da837f47b7c1df30f0ef041, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8985573993130499304, guid: 5b92c1670da837f47b7c1df30f0ef041, type: 3}
       propertyPath: m_Size.x
       value: 1.34758
@@ -10101,6 +10105,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: antorcha
       objectReference: {fileID: 0}
+    - target: {fileID: 1647286239431023971, guid: 87223ad6fb5995f4083a0d63438f24de, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4935100287931218398, guid: 87223ad6fb5995f4083a0d63438f24de, type: 3}
       propertyPath: m_LocalPosition.x
       value: 313.1
@@ -15418,11 +15426,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5551617756198788523, guid: 1ee6a126454f1ee4d8dbece99e64e8c7, type: 3}
       propertyPath: m_Enabled
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6107566976400129625, guid: 1ee6a126454f1ee4d8dbece99e64e8c7, type: 3}
       propertyPath: m_Name
       value: HumanCity
+      objectReference: {fileID: 0}
+    - target: {fileID: 6107566976400129625, guid: 1ee6a126454f1ee4d8dbece99e64e8c7, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7466998599335523691, guid: 1ee6a126454f1ee4d8dbece99e64e8c7, type: 3}
       propertyPath: m_LocalPosition.x
@@ -15466,7 +15478,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7761162472911996951, guid: 1ee6a126454f1ee4d8dbece99e64e8c7, type: 3}
       propertyPath: m_Enabled
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

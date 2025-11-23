@@ -6,8 +6,20 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/Scenes/persistScene.unity
+    guid: c42c5c7699466fb4997342d32059c1ef
+  - enabled: 1
     path: Assets/Scenes/SampleScene.unity
     guid: 99c9720ab356a0642a771bea13969a05
+  - enabled: 1
+    path: Assets/Scenes/DwarfCity.unity
+    guid: 2b3cd022bb3d39f4aa3c9de6ec5687dc
+  - enabled: 1
+    path: Assets/Scenes/Elves.unity
+    guid: fad426f0f9f13d44aa66ce5bdbf14041
+  - enabled: 1
+    path: Assets/Scenes/Orcos.unity
+    guid: 5eb6a3e4a80b3654f87e043e752f5e6d
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_UseUCBPForAssetBundles: 0

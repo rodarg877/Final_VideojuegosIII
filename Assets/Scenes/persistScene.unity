@@ -191,6 +191,11 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 2108161730}
   m_SourcePrefab: {fileID: 100100000, guid: 6bacecc4f3df9584198879c73a6b6c36, type: 3}
+--- !u!4 &308959815 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4459864850019384738, guid: 6bacecc4f3df9584198879c73a6b6c36, type: 3}
+  m_PrefabInstance: {fileID: 308959814}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &346302660
 GameObject:
   m_ObjectHideFlags: 0
@@ -372,6 +377,72 @@ MonoBehaviour:
   m_ShadowLayerMask: 1
   m_RenderingLayers: 1
   m_ShadowRenderingLayers: 1
+--- !u!1 &431983923
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 431983925}
+  - component: {fileID: 431983924}
+  m_Layer: 0
+  m_Name: TerrainStreamer
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &431983924
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 431983923}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1954c5ef8af3c3a4cb92c0f570e4076b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TerrainStreamer
+  player: {fileID: 308959815}
+  scenes:
+  - sceneName: Orcos
+    center: {x: 730, y: 0, z: 350}
+    loadDistance: 320
+    unloadDistance: 335
+    isLoaded: 0
+  - sceneName: SampleScene
+    center: {x: 330, y: 0, z: 250}
+    loadDistance: 300
+    unloadDistance: 315
+    isLoaded: 0
+  - sceneName: Elves
+    center: {x: 180, y: 0, z: 750}
+    loadDistance: 300
+    unloadDistance: 330
+    isLoaded: 0
+  - sceneName: DwarfCity
+    center: {x: 720, y: 20, z: 790}
+    loadDistance: 240
+    unloadDistance: 255
+    isLoaded: 0
+--- !u!4 &431983925
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 431983923}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 307.23907, y: 0.00003, z: 386.51138}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &540103858
 GameObject:
   m_ObjectHideFlags: 0
@@ -944,3 +1015,4 @@ SceneRoots:
   - {fileID: 308959814}
   - {fileID: 346302662}
   - {fileID: 410087041}
+  - {fileID: 431983925}
